@@ -1,11 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>User List</title>
 </head>
 <body>
-    Hallo
+    <h1>User List</h1>
+    <a href="<?= $_ENV['BASE_URL']; ?>/users/create">Add New User</a>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
+        <?php foreach ($users as $user): ?>
+            <tr>
+                <td><?= $user['id'] ?></td>
+                <td><?= $user['username'] ?></td>
+                <td><?= $user['email'] ?></td>
+                <td>
+                    <a href="<?= $_ENV['BASE_URL']; ?>/users/edit/<?= $user['id'] ?>">Edit</a>
+                    <a href="<?= $_ENV['BASE_URL']; ?>/users/delete/<?= $user['id'] ?>">Delete</a>
+                </td>
+            </tr>
+        <?php endforeach; ?>
+    </table>
 </body>
 </html>

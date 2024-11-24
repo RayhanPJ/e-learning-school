@@ -3,3 +3,6 @@ RewriteBase /e-learning-school/public/
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [QSA,L]
+RewriteRule ^login$ index.php?uri=/login [L]
+RewriteRule ^logout$ index.php?uri=/logout [L]
+RewriteRule ^dashboard$ index.php?uri=/dashboard [L]

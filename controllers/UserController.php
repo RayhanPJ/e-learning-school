@@ -1,14 +1,19 @@
 <?php
 
-require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../models/UserModel.php';
+require_once __DIR__ . '/../vendor/autoload.php'; // Lokasi vendor autoloader
+
+use Dotenv\Dotenv;
 
 class UserController
 {
-    private $db;
+    private $userModel;
 
     public function __construct()
     {
-        $this->db = (new Database())->connect();
+        $this->userModel = new UserModel();
+        $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
+        $dotenv->load();
     }
 
     /**
@@ -16,14 +21,14 @@ class UserController
      */
     public function index()
     {
-        // $query = "SELECT * FROM tbl_users";
-        // $stmt = $this->db->prepare($query);
-        // $stmt->execute();
-        // $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        session_start();
+        if (!isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') {
+            header('Location:' . $_ENV['BASE_URL'] . '/login');
+            exit;
+        }
 
-        // return $users; // Data untuk view
-
-        echo 'testt';
+        $users = $this->userModel->getAllUsers();
+        return $users; // Data untuk view
     }
 
     /**
@@ -31,20 +36,19 @@ class UserController
      */
     public function store()
     {
+        session_start();
+        if (!isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') {
+            header('Location:' . $_ENV['BASE_URL'] . '/login');
+            exit;
+        }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'];
             $password = $_POST['password'];
+            $role = $_POST['role'];
             $email = $_POST['email'];
 
-            $query = "INSERT INTO tbl_users (username, password, email) VALUES (:username, :password, :email)";
-            $stmt = $this->db->prepare($query);
-
-            $stmt->bindValue(':username', $username);
-            $stmt->bindValue(':password', password_hash($password, PASSWORD_BCRYPT));
-            $stmt->bindValue(':email', $email);
-
-            if ($stmt->execute()) {
-                header('Location: /path/to/users-list.php'); // Redirect ke daftar pengguna
+            if ($this->userModel->createUser($username, $password, $email, $role)) {
+                header('Location: ' . $_ENV['BASE_URL'] . '/users'); // Redirect ke daftar pengguna
                 exit;
             } else {
                 die('Gagal menyimpan data pengguna.');
@@ -57,14 +61,12 @@ class UserController
      */
     public function edit($id)
     {
-        $query = "SELECT * FROM tbl_users WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $id);
-        $stmt->execute();
-
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $user; // Data untuk view
+        session_start();
+        if (!isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') {
+            header('Location:' . $_ENV['BASE_URL'] . '/login');
+            exit;
+        }
+        return $this->userModel->getUserById($id);
     }
 
     /**
@@ -72,40 +74,64 @@ class UserController
      */
     public function update($id)
     {
+        session_start();
+        if (!isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') {
+            header('Location:' . $_ENV['BASE_URL'] . '/login');
+            exit;
+        }
+    
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'];
             $email = $_POST['email'];
-
-            $query = "UPDATE tbl_users SET username = :username, email = :email WHERE id = :id";
-            $stmt = $this->db->prepare($query);
-
-            $stmt->bindValue(':username', $username);
-            $stmt->bindValue(':email', $email);
-            $stmt->bindValue(':id', $id);
-
-            if ($stmt->execute()) {
-                header('Location: /path/to/users-list.php'); // Redirect ke daftar pengguna
+            $password = $_POST['password'];
+            $role = $_POST['role'];
+    
+            $isCurrentUser = isset($_SESSION['user_id']) && $_SESSION['user_id'] == $id;
+    
+            if ($this->userModel->updateUser($id, $username, $email, $password, $role)) {
+                if ($isCurrentUser) {
+                    // Jika akun yang diupdate adalah akun aktif, hapus sesi
+                    session_unset(); // Menghapus semua session
+                    session_destroy(); // Menghancurkan sesi
+                    header('Location: ' . $_ENV['BASE_URL'] . '/login'); // Redirect ke halaman login
+                } else {
+                    // Redirect ke daftar pengguna
+                    header('Location: ' . $_ENV['BASE_URL'] . '/users');
+                }
                 exit;
             } else {
                 die('Gagal memperbarui data pengguna.');
             }
         }
     }
+    
 
     /**
      * Menghapus data pengguna.
      */
     public function delete($id)
     {
-        $query = "DELETE FROM tbl_users WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $id);
-
-        if ($stmt->execute()) {
-            header('Location: /path/to/users-list.php'); // Redirect ke daftar pengguna
+        session_start();
+        if (!isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') {
+            header('Location:' . $_ENV['BASE_URL'] . '/login');
+            exit;
+        }
+        $isCurrentUser = isset($_SESSION['user_id']) && $_SESSION['user_id'] == $id;
+    
+        if ($this->userModel->deleteUser($id)) {
+            if ($isCurrentUser) {
+                // Jika akun yang dihapus adalah akun yang sedang aktif, lakukan logout
+                session_unset(); // Menghapus semua session
+                session_destroy(); // Menghancurkan sesi
+                header('Location: ' . $_ENV['BASE_URL'] . '/login'); // Redirect ke halaman login
+            } else {
+                // Redirect ke daftar pengguna jika akun lain yang dihapus
+                header('Location: ' . $_ENV['BASE_URL'] . '/users');
+            }
             exit;
         } else {
             die('Gagal menghapus data pengguna.');
         }
     }
+    
 }

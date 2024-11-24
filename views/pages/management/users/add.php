@@ -5,7 +5,7 @@
 </head>
 <body>
     <h1>Add User</h1>
-    <form method="POST" action="/users/store">
+    <form method="POST" action="<?= $_ENV['BASE_URL']; ?>/users/store">
         <label>Username:</label>
         <input type="text" name="username" required><br>
         <label>Password:</label>
