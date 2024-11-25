@@ -21,8 +21,7 @@ switch (true) {
     case $requestUri === '/dashboard' && $requestSrv === 'GET':
         $dashboardController->dashboard();
         // Sertakan template utama dengan konten dari dashboard
-        $page = 'dashboard'; // Tentukan halaman yang akan dimuat
-        require_once __DIR__ . '/../views/main.php'; // Load template utama
+        require_once __DIR__ . '/../views/dashboard.php'; // Load template utama
         break;
     // Rute untuk login form
     case $requestUri === '/login' && $requestSrv === 'GET':
@@ -45,17 +44,18 @@ switch (true) {
         break;
 
     // Rute untuk menampilkan form pembuatan pengguna
-    case $requestUri === '/users/create' && $requestSrv === 'GET':
+    case $requestUri === '/users-create' && $requestSrv === 'GET':
+        $controller->create();
         require_once __DIR__ . '/../views/pages/management/users/add.php';
         break;
 
     // Rute untuk menyimpan pengguna baru
-    case $requestUri === '/users/store' && $requestSrv === 'POST':
+    case $requestUri === '/users-store' && $requestSrv === 'POST':
         $controller->store();
         break;
 
     // Rute untuk menampilkan form edit pengguna
-    case preg_match('/^\/users\/edit\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
+    case preg_match('/^\/users-edit\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
         $user = $controller->edit($matches[1]);
         require_once __DIR__ . '/../views/pages/management/users/edit.php';
         break;

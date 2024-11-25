@@ -41,4 +41,4 @@
         </div>
     </div>
 </div>
-<?php require(__DIR__ .'../../layouts/script.php'); ?>
+<?php require(__DIR__ .'/../../layouts/script.php'); ?>

@@ -34,6 +34,11 @@ class UserController
         return $users; // Data untuk view
     }
 
+    public function create()
+    {
+        session_start();
+    }
+
     /**
      * Menyimpan data pengguna baru.
      */

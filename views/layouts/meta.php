@@ -10,6 +10,11 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
         <link rel="shortcut icon" href="../public/assets/template/images/favicon.ico">
+        <!-- DataTables -->
+        <link href="../public/assets/template/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+        <link href="../public/assets/template/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />
+        <!-- Responsive datatable examples -->
+        <link href="../public/assets/template/plugins/datatables/responsive.bootstrap4.min.css" rel="stylesheet" type="text/css" />
         <link href="../public/assets/template/plugins/morris/morris.css" rel="stylesheet">
         <link href="../public/assets/template/css/bootstrap.min.css" rel="stylesheet" type="text/css">
         <link href="../public/assets/template/css/icons.css" rel="stylesheet" type="text/css">
