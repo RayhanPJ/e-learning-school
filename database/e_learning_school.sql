@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 24 Nov 2024 pada 09.00
--- Versi server: 10.4.27-MariaDB
--- Versi PHP: 8.2.0
+-- Generation Time: Nov 25, 2024 at 04:42 PM
+-- Server version: 10.4.27-MariaDB
+-- PHP Version: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `jawaban`
+-- Table structure for table `jawaban`
 --
 
 CREATE TABLE `jawaban` (
@@ -31,19 +31,61 @@ CREATE TABLE `jawaban` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `soal`
+-- Table structure for table `jurusan`
+--
+
+CREATE TABLE `jurusan` (
+  `id` int(11) NOT NULL,
+  `nama_jurusan` varchar(255) NOT NULL,
+  `deskripsi` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `jurusan`
+--
+
+INSERT INTO `jurusan` (`id`, `nama_jurusan`, `deskripsi`) VALUES
+(1, 'INFORMATIKA', 'Jurusan Informatika'),
+(2, 'TEKNIK MESIN', 'Jurusan Teknik Mesin');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pembayaran`
+--
+
+CREATE TABLE `pembayaran` (
+  `id` int(11) NOT NULL,
+  `id_user` int(11) NOT NULL,
+  `id_jurusan` int(11) NOT NULL,
+  `status` enum('pending','completed','failed') NOT NULL DEFAULT 'pending',
+  `tanggal_pembayaran` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pembayaran`
+--
+
+INSERT INTO `pembayaran` (`id`, `id_user`, `id_jurusan`, `status`, `tanggal_pembayaran`) VALUES
+(1, 1, 1, 'pending', '2024-11-25 22:39:15');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `soal`
 --
 
 CREATE TABLE `soal` (
   `id` int(11) NOT NULL,
   `pertanyaan` text NOT NULL,
-  `skor` double NOT NULL DEFAULT 0
+  `skor` double NOT NULL DEFAULT 0,
+  `id_jurusan` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `tokens`
+-- Table structure for table `tokens`
 --
 
 CREATE TABLE `tokens` (
@@ -53,23 +95,38 @@ CREATE TABLE `tokens` (
   `expired_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `tokens`
+--
+
+INSERT INTO `tokens` (`id`, `id_user`, `token`, `expired_at`) VALUES
+(1, 1, 'testttttt', '2024-11-25 15:39:55');
+
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `users`
+-- Table structure for table `users`
 --
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL
+  `email` varchar(255) NOT NULL,
+  `role` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `username`, `password`, `email`, `role`) VALUES
+(1, 'admin', '123', 'admin@gmail.com', 'admin');
 
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `user_jawaban`
+-- Table structure for table `user_jawaban`
 --
 
 CREATE TABLE `user_jawaban` (
@@ -84,34 +141,46 @@ CREATE TABLE `user_jawaban` (
 --
 
 --
--- Indeks untuk tabel `jawaban`
+-- Indexes for table `jawaban`
 --
 ALTER TABLE `jawaban`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_soal` (`id_soal`);
 
 --
--- Indeks untuk tabel `soal`
+-- Indexes for table `jurusan`
+--
+ALTER TABLE `jurusan`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `pembayaran`
+--
+ALTER TABLE `pembayaran`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `soal`
 --
 ALTER TABLE `soal`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indeks untuk tabel `tokens`
+-- Indexes for table `tokens`
 --
 ALTER TABLE `tokens`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_user` (`id_user`);
 
 --
--- Indeks untuk tabel `users`
+-- Indexes for table `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `email` (`email`);
 
 --
--- Indeks untuk tabel `user_jawaban`
+-- Indexes for table `user_jawaban`
 --
 ALTER TABLE `user_jawaban`
   ADD PRIMARY KEY (`id`),
@@ -120,57 +189,69 @@ ALTER TABLE `user_jawaban`
   ADD KEY `id_jawaban` (`id_jawaban`);
 
 --
--- AUTO_INCREMENT untuk tabel yang dibuang
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT untuk tabel `jawaban`
+-- AUTO_INCREMENT for table `jawaban`
 --
 ALTER TABLE `jawaban`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `soal`
+-- AUTO_INCREMENT for table `jurusan`
+--
+ALTER TABLE `jurusan`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `pembayaran`
+--
+ALTER TABLE `pembayaran`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `soal`
 --
 ALTER TABLE `soal`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT untuk tabel `tokens`
+-- AUTO_INCREMENT for table `tokens`
 --
 ALTER TABLE `tokens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT untuk tabel `users`
+-- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT untuk tabel `user_jawaban`
+-- AUTO_INCREMENT for table `user_jawaban`
 --
 ALTER TABLE `user_jawaban`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
+-- Constraints for dumped tables
 --
 
 --
--- Ketidakleluasaan untuk tabel `jawaban`
+-- Constraints for table `jawaban`
 --
 ALTER TABLE `jawaban`
   ADD CONSTRAINT `jawaban_ibfk_1` FOREIGN KEY (`id_soal`) REFERENCES `soal` (`id`) ON DELETE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `tokens`
+-- Constraints for table `tokens`
 --
 ALTER TABLE `tokens`
   ADD CONSTRAINT `tokens_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
--- Ketidakleluasaan untuk tabel `user_jawaban`
+-- Constraints for table `user_jawaban`
 --
 ALTER TABLE `user_jawaban`
   ADD CONSTRAINT `user_jawaban_ibfk_1` FOREIGN KEY (`id_user`) REFERENCES `users` (`id`) ON DELETE CASCADE,

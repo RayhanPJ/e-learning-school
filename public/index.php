@@ -56,9 +56,9 @@ switch (true) {
 
     // Rute untuk menampilkan form edit pengguna
     case preg_match('/^\/users-edit\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
-        $user = $controller->edit($matches[1]);
+        $user = $controller->edit((int)$matches[1]); // Konversi ID ke integer
         require_once __DIR__ . '/../views/pages/management/users/edit.php';
-        break;
+        break;    
 
     // Rute untuk memperbarui pengguna
     case preg_match('/^\/users\/update\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'POST':

@@ -14,15 +14,15 @@
                         <form method="POST" action="<?= $_ENV['BASE_URL']; ?>/users/store">
                             <div class="form-group">
                                 <label>Username :</label>
-                                <input type="text" class="form-control" <?= $user['username'] ?> name="username" required placeholder="Input Username"/>
+                                <input type="text" class="form-control" value="<?= $user['username'] ?>" name="username" required placeholder="Input Username"/>
                             </div>
                             <div class="form-group">
                                 <label>Password :</label>
-                                <input type="password" class="form-control" <?= $user['password'] ?> name="password" required placeholder="Input Username"/>
+                                <input type="password" class="form-control" value="<?= $user['password'] ?>" name="password" required placeholder="Input Username"/>
                             </div>
                             <div class="form-group">
                                 <label>Email :</label>
-                                <input type="email" class="form-control" <?= $user['email'] ?> name="email" required placeholder="Input Username"/>
+                                <input type="email" class="form-control" value="<?= $user['email'] ?>" name="email" required placeholder="Input Username"/>
                             </div>
                             <div class="form-group">
                                 <label>Role</label>

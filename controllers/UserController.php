@@ -22,21 +22,21 @@ class UserController
     public function index()
     {
         session_start();
-        if (!isset($_SESSION['user_id'])) {
-            header('Location:' . $_ENV['BASE_URL'] . '/login');
-            exit;
-        } elseif($_SESSION['role'] != 'admin') {
-            header('Location:' . $_ENV['BASE_URL'] . '/dashboard');
-            exit;
-        }
+        $users = $this->userModel->getAllUsersWithDetails();
+        var_dump($users);die;
+        $this->authorize('admin'); // Hanya admin yang bisa mengakses
 
-        $users = $this->userModel->getAllUsers();
         return $users; // Data untuk view
     }
 
+    /**
+     * Halaman untuk membuat pengguna baru.
+     */
     public function create()
     {
         session_start();
+        $this->authorize('admin');
+        // Tampilan form pembuatan pengguna.
     }
 
     /**
@@ -45,21 +45,27 @@ class UserController
     public function store()
     {
         session_start();
-        if (!isset($_SESSION['user_id'])) {
-            header('Location:' . $_ENV['BASE_URL'] . '/login');
-            exit;
-        } elseif($_SESSION['role'] != 'admin') {
-            header('Location:' . $_ENV['BASE_URL'] . '/dashboard');
-            exit;
-        }
+        $this->authorize('admin');
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'];
-            $password = $_POST['password'];
-            $role = $_POST['role'];
-            $email = $_POST['email'];
+            $username = trim($_POST['username']);
+            $password = trim($_POST['password']);
+            $role = trim($_POST['role']);
+            $email = trim($_POST['email']);
+
+            // Validasi data
+            if (empty($username) || empty($password) || empty($role) || empty($email)) {
+                die('Semua kolom wajib diisi.');
+            }
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                die('Format email tidak valid.');
+            }
+
 
             if ($this->userModel->createUser($username, $password, $email, $role)) {
-                header('Location: ' . $_ENV['BASE_URL'] . '/users'); // Redirect ke daftar pengguna
+                $_SESSION['flash'] = 'Pengguna berhasil ditambahkan.';
+                header('Location: ' . $_ENV['BASE_URL'] . '/users');
                 exit;
             } else {
                 die('Gagal menyimpan data pengguna.');
@@ -68,18 +74,12 @@ class UserController
     }
 
     /**
-     * Mengambil data pengguna untuk di-edit.
+     * Halaman edit data pengguna.
      */
     public function edit($id)
     {
         session_start();
-        if (!isset($_SESSION['user_id'])) {
-            header('Location:' . $_ENV['BASE_URL'] . '/login');
-            exit;
-        } elseif($_SESSION['role'] != 'admin') {
-            header('Location:' . $_ENV['BASE_URL'] . '/dashboard');
-            exit;
-        }
+        $this->authorize('admin');
         return $this->userModel->getUserById($id);
     }
 
@@ -89,39 +89,27 @@ class UserController
     public function update($id)
     {
         session_start();
-        if (!isset($_SESSION['user_id'])) {
-            header('Location:' . $_ENV['BASE_URL'] . '/login');
-            exit;
-        } elseif($_SESSION['role'] != 'admin') {
-            header('Location:' . $_ENV['BASE_URL'] . '/dashboard');
-            exit;
-        }
-    
+        $this->authorize('admin');
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = $_POST['username'];
-            $email = $_POST['email'];
-            $password = $_POST['password'];
-            $role = $_POST['role'];
-    
-            $isCurrentUser = isset($_SESSION['user_id']) && $_SESSION['user_id'] == $id;
-    
+            $username = trim($_POST['username']);
+            $email = trim($_POST['email']);
+            $password = trim($_POST['password']);
+            $role = trim($_POST['role']);
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                die('Format email tidak valid.');
+            }
+
             if ($this->userModel->updateUser($id, $username, $email, $password, $role)) {
-                if ($isCurrentUser) {
-                    // Jika akun yang diupdate adalah akun aktif, hapus sesi
-                    session_unset(); // Menghapus semua session
-                    session_destroy(); // Menghancurkan sesi
-                    header('Location: ' . $_ENV['BASE_URL'] . '/login'); // Redirect ke halaman login
-                } else {
-                    // Redirect ke daftar pengguna
-                    header('Location: ' . $_ENV['BASE_URL'] . '/users');
-                }
+                $_SESSION['flash'] = 'Pengguna berhasil diperbarui.';
+                header('Location: ' . $_ENV['BASE_URL'] . '/users');
                 exit;
             } else {
                 die('Gagal memperbarui data pengguna.');
             }
         }
     }
-    
 
     /**
      * Menghapus data pengguna.
@@ -129,29 +117,30 @@ class UserController
     public function delete($id)
     {
         session_start();
-        if (!isset($_SESSION['user_id'])) {
-            header('Location:' . $_ENV['BASE_URL'] . '/login');
-            exit;
-        } elseif($_SESSION['role'] != 'admin') {
-            header('Location:' . $_ENV['BASE_URL'] . '/dashboard');
-            exit;
-        }
-        $isCurrentUser = isset($_SESSION['user_id']) && $_SESSION['user_id'] == $id;
-    
+        $this->authorize('admin');
+
         if ($this->userModel->deleteUser($id)) {
-            if ($isCurrentUser) {
-                // Jika akun yang dihapus adalah akun yang sedang aktif, lakukan logout
-                session_unset(); // Menghapus semua session
-                session_destroy(); // Menghancurkan sesi
-                header('Location: ' . $_ENV['BASE_URL'] . '/login'); // Redirect ke halaman login
-            } else {
-                // Redirect ke daftar pengguna jika akun lain yang dihapus
-                header('Location: ' . $_ENV['BASE_URL'] . '/users');
-            }
+            $_SESSION['flash'] = 'Pengguna berhasil dihapus.';
+            header('Location: ' . $_ENV['BASE_URL'] . '/users');
             exit;
         } else {
             die('Gagal menghapus data pengguna.');
         }
     }
-    
+
+    /**
+     * Memeriksa hak akses pengguna berdasarkan peran.
+     */
+    private function authorize($requiredRole)
+    {
+        if (!isset($_SESSION['user_id'])) {
+            header('Location: ' . $_ENV['BASE_URL'] . '/login');
+            exit;
+        }
+
+        if ($_SESSION['role'] !== $requiredRole) {
+            header('Location: ' . $_ENV['BASE_URL'] . '/dashboard');
+            exit;
+        }
+    }
 }

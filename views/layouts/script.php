@@ -1,39 +1,42 @@
-<script src="../public/assets/template/js/jquery.min.js"></script>
-<script src="../public/assets/template/js/popper.min.js"></script>
-<script src="../public/assets/template/js/bootstrap.min.js"></script>
-<script src="../public/assets/template/js/modernizr.min.js"></script>
-<script src="../public/assets/template/js/waves.js"></script>
-<script src="../public/assets/template/js/jquery.slimscroll.js"></script>
-<script src="../public/assets/template/js/jquery.nicescroll.js"></script>
-<script src="../public/assets/template/js/jquery.scrollTo.min.js"></script>
+<?php
+$base_url = "/e-learning-school/public/assets/template";
+?>
+<script src="<?= $base_url; ?>/js/jquery.min.js"></script>
+<script src="<?= $base_url; ?>/js/popper.min.js"></script>
+<script src="<?= $base_url; ?>/js/bootstrap.min.js"></script>
+<script src="<?= $base_url; ?>/js/modernizr.min.js"></script>
+<script src="<?= $base_url; ?>/js/waves.js"></script>
+<script src="<?= $base_url; ?>/js/jquery.slimscroll.js"></script>
+<script src="<?= $base_url; ?>/js/jquery.nicescroll.js"></script>
+<script src="<?= $base_url; ?>/js/jquery.scrollTo.min.js"></script>
 
 <!-- Required datatable js -->
-<script src="../public/assets/template/plugins/datatables/jquery.dataTables.min.js"></script>
-<script src="../public/assets/template/plugins/datatables/dataTables.bootstrap4.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/dataTables.bootstrap4.min.js"></script>
 <!-- Buttons examples -->
-<script src="../public/assets/template/plugins/datatables/dataTables.buttons.min.js"></script>
-<script src="../public/assets/template/plugins/datatables/buttons.bootstrap4.min.js"></script>
-<script src="../public/assets/template/plugins/datatables/jszip.min.js"></script>
-<script src="../public/assets/template/plugins/datatables/pdfmake.min.js"></script>
-<script src="../public/assets/template/plugins/datatables/vfs_fonts.js"></script>
-<script src="../public/assets/template/plugins/datatables/buttons.html5.min.js"></script>
-<script src="../public/assets/template/plugins/datatables/buttons.print.min.js"></script>
-<script src="../public/assets/template/plugins/datatables/buttons.colVis.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/dataTables.buttons.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/buttons.bootstrap4.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/jszip.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/pdfmake.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/vfs_fonts.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/buttons.html5.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/buttons.print.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/buttons.colVis.min.js"></script>
 <!-- Responsive examples -->
-<script src="../public/assets/template/plugins/datatables/dataTables.responsive.min.js"></script>
-<script src="../public/assets/template/plugins/datatables/responsive.bootstrap4.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/dataTables.responsive.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/datatables/responsive.bootstrap4.min.js"></script>
 
 <!-- Datatable init js -->
-<script src="../public/assets/template/pages/datatables.init.js"></script>
+<script src="<?= $base_url; ?>/pages/datatables.init.js"></script>
 
-<script src="../public/assets/template/plugins/skycons/skycons.min.js"></script>
-<script src="../public/assets/template/plugins/raphael/raphael-min.js"></script>
-<script src="../public/assets/template/plugins/morris/morris.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/skycons/skycons.min.js"></script>
+<script src="<?= $base_url; ?>/plugins/raphael/raphael-min.js"></script>
+<script src="<?= $base_url; ?>/plugins/morris/morris.min.js"></script>
 
-<script src="../public/assets/template/pages/dashborad.js"></script>
+<script src="<?= $base_url; ?>/pages/dashborad.js"></script>
 
 <!-- App js -->
-<script src="../public/assets/template/js/app.js"></script>
+<script src="<?= $base_url; ?>/js/app.js"></script>
 <script>
     /* BEGIN SVG WEATHER ICON */
     if (typeof Skycons !== 'undefined'){

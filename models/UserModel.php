@@ -91,4 +91,27 @@ class UserModel
         $stmt->bindValue(':id', $id);
         return $stmt->execute();
     }
+
+    public function getAllUsersWithDetails()
+    {
+        $query = "
+            SELECT 
+                u.id AS id_user,
+                u.username,
+                u.role,
+                u.email,
+                j.nama_jurusan,
+                p.status AS status_pembayaran,
+                p.tanggal_pembayaran,
+                t.token
+            FROM users u
+            LEFT JOIN pembayaran p ON u.id = p.id_user
+            LEFT JOIN jurusan j ON p.id_jurusan = j.id
+            LEFT JOIN tokens t ON u.id = t.id_user
+        ";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }
