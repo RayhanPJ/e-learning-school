@@ -33,6 +33,7 @@ class AuthController
                 session_start();
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
+                $_SESSION['role'] = $user['role'];
 
                 // Redirect ke halaman dashboard
                 header('Location: ' . $_ENV['BASE_URL'] . '/dashboard');

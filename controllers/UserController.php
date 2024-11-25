@@ -22,8 +22,11 @@ class UserController
     public function index()
     {
         session_start();
-        if (!isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') {
+        if (!isset($_SESSION['user_id'])) {
             header('Location:' . $_ENV['BASE_URL'] . '/login');
+            exit;
+        } elseif($_SESSION['role'] != 'admin') {
+            header('Location:' . $_ENV['BASE_URL'] . '/dashboard');
             exit;
         }
 
@@ -37,8 +40,11 @@ class UserController
     public function store()
     {
         session_start();
-        if (!isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') {
+        if (!isset($_SESSION['user_id'])) {
             header('Location:' . $_ENV['BASE_URL'] . '/login');
+            exit;
+        } elseif($_SESSION['role'] != 'admin') {
+            header('Location:' . $_ENV['BASE_URL'] . '/dashboard');
             exit;
         }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -62,8 +68,11 @@ class UserController
     public function edit($id)
     {
         session_start();
-        if (!isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') {
+        if (!isset($_SESSION['user_id'])) {
             header('Location:' . $_ENV['BASE_URL'] . '/login');
+            exit;
+        } elseif($_SESSION['role'] != 'admin') {
+            header('Location:' . $_ENV['BASE_URL'] . '/dashboard');
             exit;
         }
         return $this->userModel->getUserById($id);
@@ -75,8 +84,11 @@ class UserController
     public function update($id)
     {
         session_start();
-        if (!isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') {
+        if (!isset($_SESSION['user_id'])) {
             header('Location:' . $_ENV['BASE_URL'] . '/login');
+            exit;
+        } elseif($_SESSION['role'] != 'admin') {
+            header('Location:' . $_ENV['BASE_URL'] . '/dashboard');
             exit;
         }
     
@@ -112,8 +124,11 @@ class UserController
     public function delete($id)
     {
         session_start();
-        if (!isset($_SESSION['user_id']) && $_SESSION['role'] == 'admin') {
+        if (!isset($_SESSION['user_id'])) {
             header('Location:' . $_ENV['BASE_URL'] . '/login');
+            exit;
+        } elseif($_SESSION['role'] != 'admin') {
+            header('Location:' . $_ENV['BASE_URL'] . '/dashboard');
             exit;
         }
         $isCurrentUser = isset($_SESSION['user_id']) && $_SESSION['user_id'] == $id;

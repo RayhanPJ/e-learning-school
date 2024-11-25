@@ -12,6 +12,8 @@
         <input type="password" name="password" required><br>
         <label>Email:</label>
         <input type="email" name="email" required><br>
+        <label>role:</label>
+        <input type="text" name="role" required><br>
         <button type="submit">Save</button>
     </form>
 </body>

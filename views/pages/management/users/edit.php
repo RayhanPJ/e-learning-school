@@ -12,6 +12,8 @@
         <input type="text" name="password" value="<?= $user['password'] ?>" required><br>
         <label>Email:</label>
         <input type="email" name="email" value="<?= $user['email'] ?>" required><br>
+        <label>Role:</label>
+        <input type="text" name="role" value="<?= $user['role'] ?>" required><br>
         <button type="submit">Update</button>
     </form>
 </body>
