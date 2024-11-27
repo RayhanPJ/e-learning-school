@@ -22,8 +22,8 @@ class UserController
     public function index()
     {
         session_start();
-        $users = $this->userModel->getAllUsersWithDetails();
-        var_dump($users);die;
+        $users = $this->userModel->getAllUsers();
+        // var_dump($users);die;
         $this->authorize('admin'); // Hanya admin yang bisa mengakses
 
         return $users; // Data untuk view
@@ -50,25 +50,34 @@ class UserController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = trim($_POST['username']);
             $password = trim($_POST['password']);
-            $role = trim($_POST['role']);
-            $email = trim($_POST['email']);
-
-            // Validasi data
-            if (empty($username) || empty($password) || empty($role) || empty($email)) {
-                die('Semua kolom wajib diisi.');
+            $role = trim('admin');
+    
+            // Validasi input
+            if (empty($username)) {
+                $errors['username'] = 'Please enter Username';
             }
-
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                die('Format email tidak valid.');
+    
+            if (empty($password)) {
+                $errors['password'] = 'Please enter Password';
             }
-
-
-            if ($this->userModel->createUser($username, $password, $email, $role)) {
-                $_SESSION['flash'] = 'Pengguna berhasil ditambahkan.';
-                header('Location: ' . $_ENV['BASE_URL'] . '/users');
+    
+            // Jika ada error, kembalikan ke view dengan error
+            if (!empty($errors)) {
+                $_SESSION['errors'] = $errors; // Simpan error dalam session
+                $_SESSION['old'] = $_POST;    // Simpan data input sebelumnya
+                header('Location: ' . $_ENV['BASE_URL'] . '/users-create');
+                exit;
+            }
+    
+            // Jika validasi berhasil, update data
+            if ($this->userModel->createUser($username, $password, $role)) {
+                $_SESSION['flash'] = 'User berhasil ditambahkan.';
+                header('Location: ' . $_ENV['BASE_URL'] . '/class');
                 exit;
             } else {
-                die('Gagal menyimpan data pengguna.');
+                $_SESSION['flash'] = 'User gagal ditambahkan.';
+                header('Location: ' . $_ENV['BASE_URL'] . '/class');
+                exit;
             }
         }
     }
@@ -93,20 +102,35 @@ class UserController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = trim($_POST['username']);
-            $email = trim($_POST['email']);
             $password = trim($_POST['password']);
-            $role = trim($_POST['role']);
-
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                die('Format email tidak valid.');
+            $role = trim('admin');
+    
+            // Validasi input
+            if (empty($username)) {
+                $errors['username'] = 'Please enter Username';
             }
-
-            if ($this->userModel->updateUser($id, $username, $email, $password, $role)) {
-                $_SESSION['flash'] = 'Pengguna berhasil diperbarui.';
-                header('Location: ' . $_ENV['BASE_URL'] . '/users');
+    
+            if (empty($password)) {
+                $errors['password'] = 'Please enter Password';
+            }
+    
+            // Jika ada error, kembalikan ke view dengan error
+            if (!empty($errors)) {
+                $_SESSION['errors'] = $errors; // Simpan error dalam session
+                $_SESSION['old'] = $_POST;    // Simpan data input sebelumnya
+                header('Location: ' . $_ENV['BASE_URL'] . '/users-create');
+                exit;
+            }
+    
+            // Jika validasi berhasil, update data
+            if ($this->userModel->updateUser($id, $username, $password, $role)) {
+                $_SESSION['flash'] = 'User berhasil diperbarui.';
+                header('Location: ' . $_ENV['BASE_URL'] . '/class');
                 exit;
             } else {
-                die('Gagal memperbarui data pengguna.');
+                $_SESSION['flash'] = 'User gagal diperbarui.';
+                header('Location: ' . $_ENV['BASE_URL'] . '/class');
+                exit;
             }
         }
     }

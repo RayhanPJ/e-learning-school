@@ -13,6 +13,7 @@
                     <?php if($_SESSION['role'] == 'admin'): ?>
                     <ul class="submenu">
                         <li><a href="<?= $_ENV['BASE_URL']; ?>/users">Users</a></li>
+                        <li><a href="<?= $_ENV['BASE_URL']; ?>/class">Class</a></li>
                     </ul>
                     <?php endif ?>
                 </li>

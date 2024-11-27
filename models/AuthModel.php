@@ -20,7 +20,7 @@ class AuthModel
      */
     public function login($username, $password)
     {
-        $query = "SELECT * FROM users WHERE username = :username AND password = :password";
+        $query = "SELECT * FROM teachers WHERE username = :username AND password = :password";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':username', $username);
         $stmt->bindValue(':password', $password); // Password disimpan dalam bentuk plaintext

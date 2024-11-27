@@ -2,6 +2,15 @@
 <!-- Navigation Bar-->
 <?php require(__DIR__ . '/../../../layouts/header.php'); ?>
 
+<?php
+if (isset($_SESSION['errors'])) {
+    unset($_SESSION['errors']);
+}
+if (isset($_SESSION['old'])) {
+    unset($_SESSION['old']);
+}
+?>
+
 <div class="wrapper">
     <div class="container-fluid">
         <div class="row">
@@ -9,30 +18,23 @@
                 <div class="card m-b-30">
                     <div class="card-body">
 
-                        <h2 class="mt-0 header-title">Add User</h2>
+                        <h2 class="mt-0 header-title">Add Teachers</h2>
 
-                        <form method="POST" action="<?= $_ENV['BASE_URL']; ?>/users/store">
+                        <form method="POST" action="<?= $_ENV['BASE_URL']; ?>/users/update/<?= $user['id'] ?>">
                             <div class="form-group">
                                 <label>Username :</label>
                                 <input type="text" class="form-control" value="<?= $user['username'] ?>" name="username" required placeholder="Input Username"/>
+                                <span id="teacher_username_error" class="error text-danger">
+                                    <?= $_SESSION['errors']['username'] ?? '' ?>
+                                </span>
                             </div>
                             <div class="form-group">
                                 <label>Password :</label>
                                 <input type="password" class="form-control" value="<?= $user['password'] ?>" name="password" required placeholder="Input Username"/>
+                                <span id="teacher_password_error" class="error text-danger">
+                                    <?= $_SESSION['errors']['password'] ?? '' ?>
+                                </span>
                             </div>
-                            <div class="form-group">
-                                <label>Email :</label>
-                                <input type="email" class="form-control" value="<?= $user['email'] ?>" name="email" required placeholder="Input Username"/>
-                            </div>
-                            <div class="form-group">
-                                <label>Role</label>
-                                <select class="form-control" name="role">
-                                    <option>--- Select Role ---</option>
-                                    <option value="admin">admin</option>
-                                    <option value="member">member</option>
-                                </select>
-                            </div>
-
                             <button type="submit" class="btn btn-primary ml-2">Submit</button>
                         </form>
                     </div>

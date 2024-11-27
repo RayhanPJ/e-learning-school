@@ -18,7 +18,7 @@ class UserModel
      */
     public function getAllUsers()
     {
-        $query = "SELECT * FROM users";
+        $query = "SELECT * FROM teachers";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -32,13 +32,12 @@ class UserModel
      * @param string $email
      * @return bool
      */
-    public function createUser($username, $password, $email, $role)
+    public function createUser($username, $password, $email, string $role = 'admin')
     {
-        $query = "INSERT INTO users (username, password, email, role) VALUES (:username, :password, :email, :role)";
+        $query = "INSERT INTO teachers (username, password, email, role) VALUES (:username, :password, :email, :role)";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':username', $username);
         $stmt->bindValue(':password', $password);
-        $stmt->bindValue(':email', $email);
         $stmt->bindValue(':role', $role);
         return $stmt->execute();
     }
@@ -51,7 +50,7 @@ class UserModel
      */
     public function getUserById($id)
     {
-        $query = "SELECT * FROM users WHERE id = :id";
+        $query = "SELECT * FROM teachers WHERE id = :id";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':id', $id);
         $stmt->execute();
@@ -66,13 +65,12 @@ class UserModel
      * @param string $email
      * @return bool
      */
-    public function updateUser($id, $username, $email, $password, $role)
+    public function updateUser($id, $username, $email, $password, string $role = 'admin')
     {
-        $query = "UPDATE users SET username = :username, email = :email, password = :password, role = :role WHERE id = :id";
+        $query = "UPDATE teachers SET username = :username, email = :email, password = :password, role = :role WHERE id = :id";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':username', $username);
         $stmt->bindValue(':password', $password);
-        $stmt->bindValue(':email', $email);
         $stmt->bindValue(':role', $role);
         $stmt->bindValue(':id', $id);
         return $stmt->execute();
@@ -86,7 +84,7 @@ class UserModel
      */
     public function deleteUser($id)
     {
-        $query = "DELETE FROM users WHERE id = :id";
+        $query = "DELETE FROM teachers WHERE id = :id";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':id', $id);
         return $stmt->execute();
@@ -104,7 +102,7 @@ class UserModel
                 p.status AS status_pembayaran,
                 p.tanggal_pembayaran,
                 t.token
-            FROM users u
+            FROM teachers u
             LEFT JOIN pembayaran p ON u.id = p.id_user
             LEFT JOIN jurusan j ON p.id_jurusan = j.id
             LEFT JOIN tokens t ON u.id = t.id_user
