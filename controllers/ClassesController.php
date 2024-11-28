@@ -56,6 +56,8 @@ class ClassesController
             $name = trim($_POST['name']);
             $class_id = trim($_POST['class_id']);
             $majorId = trim($_POST['major_id']);
+            $starting_roll_number = trim($_POST['starting_roll_number']);
+            $ending_roll_number = trim($_POST['ending_roll_number']);
 
             // Validasi input
             if (empty($name)) {
@@ -74,17 +76,13 @@ class ClassesController
                 exit;
             }
 
-            // Calculate starting and ending roll numbers based on registers count
-            $starting_roll_number = 1;
-            $ending_roll_number = $this->registersModel->countRegistersByClassId($class_id);
-
             // Jika validasi berhasil, tambahkan data ke classes
             $class = $this->classModel->createClass($name, $starting_roll_number, $ending_roll_number);
 
             if ($class) {
                 $classId = $class['id'];
                 // Tambahkan roll numbers ke student_data
-                if ($this->studentDataModel->createStudentData($starting_roll_number, $ending_roll_number, $classId, $majorId)) {
+                if ($this->studentDataModel->createStudentData($starting_roll_number, $ending_roll_number, $classId)) {
                     $_SESSION['flash'] = 'Class berhasil ditambahkan beserta student data.';
                 } else {
                     $_SESSION['flash'] = 'Class berhasil, namun gagal menambahkan student data.';

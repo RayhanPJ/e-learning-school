@@ -18,7 +18,7 @@ class RegistersModel {
 
     // Method to count registers by class ID
     public function countRegistersByClassId($class_id) {
-        $query = "SELECT COUNT(*) as count FROM registers WHERE class_id = :class_id";
+        $query = "SELECT COUNT(*) as count FROM registers WHERE class_id = :class_id and status = true";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':class_id', $class_id, PDO::PARAM_INT);
         $stmt->execute();
@@ -27,10 +27,10 @@ class RegistersModel {
     }
 
     // Method to get register ID by roll number and class ID
-    public function getRegisterIdByRollNumberAndClassId($majorId) {
-        $query = "SELECT id FROM registers WHERE major_id = :major_id";
+    public function getRegisterIdByRollNumberAndClassId($class_id) {
+        $query = "SELECT id FROM registers WHERE class_id = :class_id";
         $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':major_id', $majorId, PDO::PARAM_INT);
+        $stmt->bindValue(':class_id', $class_id, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result;
@@ -38,13 +38,14 @@ class RegistersModel {
 
     // Method to create a new register
     public function createRegister($name, $date_of_birth, $phone, $major_id) {
-        $query = "INSERT INTO registers (name, date_of_birth, phone, major_id) 
-                  VALUES (:name, :date_of_birth, :phone, :major_id)";
+        $query = "INSERT INTO registers (name, date_of_birth, phone, major_id, status) 
+                  VALUES (:name, :date_of_birth, :phone, :major_id, :status)";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':name', $name);
         $stmt->bindValue(':date_of_birth', $date_of_birth);
         $stmt->bindValue(':phone', $phone);
         $stmt->bindValue(':major_id', $major_id);
+        $stmt->bindValue(':status', false,PDO::PARAM_BOOL);
         $stmt->execute();
 
         // Return the newly created register
@@ -61,13 +62,10 @@ class RegistersModel {
     }
 
     // Method to update a register
-    public function updateRegister($id, $name, $date_of_birth, $phone, $major_id) {
-        $query = "UPDATE registers SET name = :name, date_of_birth = :date_of_birth, phone = :phone, major_id = :major_id WHERE id = :id";
+    public function updateRegister($id) {
+        $query = "UPDATE registers SET status = :status WHERE id = :id";
         $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':name', $name);
-        $stmt->bindValue(':date_of_birth', $date_of_birth);
-        $stmt->bindValue(':phone', $phone);
-        $stmt->bindValue(':major_id', $major_id);
+        $stmt->bindValue(':status', true,PDO::PARAM_BOOL);
         $stmt->bindValue(':id', $id);
         return $stmt->execute();
     }

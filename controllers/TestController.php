@@ -96,8 +96,9 @@ class TestController
                 $students = $this->studentDataModel->getStudentsByClassId($class_id);
                 foreach ($students as $student) {
                     $rollno = $student['id'];
+                    $$username = $student['$username'];
                     $password = $this->generateRandomString(8 - strlen($test_id)) . $test_id;
-                    $this->studentModel->createStudent($test_id, $rollno, $password);
+                    $this->studentModel->createStudent($test_id, $rollno,$username, $password);
                 }
 
                 $_SESSION['flash'] = 'Test berhasil dibuat.';

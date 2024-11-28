@@ -20,12 +20,12 @@ class StudentDataModel {
     }
 
     // Insert multiple roll numbers for a class
-    public function createStudentData($starting_roll_number, $ending_roll_number, $class_id, $major_id) {
+    public function createStudentData($starting_roll_number, $ending_roll_number, $class_id) {
         $this->db->beginTransaction();
         try {
             for ($x = $starting_roll_number; $x <= $ending_roll_number; $x++) {
                 // Fetch the registers_id for the current roll number
-                $registers_id = $this->registersModel->getRegisterIdByRollNumberAndClassId($major_id);
+                $registers_id = $this->registersModel->getRegisterIdByRollNumberAndClassId($class_id);
     
                 $query = "INSERT INTO student_data (registers_id, rollno, class_id) VALUES (:registers_id, :rollno, :class_id)";
                 $stmt = $this->db->prepare($query);
@@ -53,12 +53,33 @@ class StudentDataModel {
     }
 
     public function getStudentsByClassId($class_id) {
-        $query = "SELECT id FROM student_data WHERE class_id = :class_id";
+        $query = "
+            SELECT 
+                sd.id,
+                r.name AS register_name,
+                r.date_of_birth,
+                r.phone,
+                r.major_id,
+                m.name AS major_name,
+                r.status,
+                sd.rollno,
+                sd.registers_id
+            FROM 
+                student_data sd
+            JOIN 
+                registers r ON sd.registers_id = r.id
+            LEFT JOIN 
+                major m ON r.major_id = m.id
+            WHERE 
+                sd.class_id = :class_id
+        ";
+        
         $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':class_id', $class_id);
+        $stmt->bindValue(':class_id', $class_id, PDO::PARAM_INT);
         $stmt->execute();
+        
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
+    }    
 
     // Update student data
     public function updateStudentData($id, $rollno, $class_id) {

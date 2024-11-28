@@ -15,12 +15,13 @@ class StudentModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function createStudent($test_id, $rollno, $password, int $score = 0, int $status = 0) {
-        $query = "INSERT INTO students (test_id, rollno, password, score, status) 
-                  VALUES (:test_id, :rollno, :password, :score, :status)";
+    public function createStudent($test_id, $rollno, $username, $password, int $score = 0, int $status = 0) {
+        $query = "INSERT INTO students (test_id, rollno, username, password, score, status) 
+                  VALUES (:test_id, :rollno, :username, :password, :score, :status)";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':test_id', $test_id);
         $stmt->bindValue(':rollno', $rollno);
+        $stmt->bindValue(':username', $username);
         $stmt->bindValue(':password', $password);
         $stmt->bindValue(':score', $score);
         $stmt->bindValue(':status', $status);
