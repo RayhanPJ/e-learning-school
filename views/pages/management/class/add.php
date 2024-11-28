@@ -6,9 +6,6 @@
 if (isset($_SESSION['errors'])) {
     unset($_SESSION['errors']);
 }
-if (isset($_SESSION['old'])) {
-    unset($_SESSION['old']);
-}
 ?>
 
 <div class="wrapper">
@@ -27,22 +24,6 @@ if (isset($_SESSION['old'])) {
                                     name="name" placeholder="Class name" />
                                 <span id="class_name_error" class="error text-danger">
                                     <?= $_SESSION['errors']['name'] ?? '' ?>
-                                </span>
-                            </div>
-                            <div class="form-group">
-                                <label>Starting Roll number</label>
-                                <input type="number" class="form-control" id="starting_roll_number" 
-                                    name="starting_roll_number" placeholder="Starting roll number" />
-                                <span id="starting_roll_error" class="error text-danger">
-                                    <?= $_SESSION['errors']['starting_roll_number'] ?? '' ?>
-                                </span>
-                            </div>
-                            <div class="form-group">
-                                <label>Ending Roll number</label>
-                                <input type="number" class="form-control" id="ending_roll_number" 
-                                    name="ending_roll_number" placeholder="Ending roll number" />
-                                <span id="ending_roll_error" class="error text-danger">
-                                    <?= $_SESSION['errors']['ending_roll_number'] ?? '' ?>
                                 </span>
                             </div>
                             <button type="submit" class="btn btn-primary ml-2">Submit</button>

@@ -1,11 +1,14 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ .'/RegistersModel.php';
 
 class StudentDataModel {
     private $db;
+    private $registersModel;
 
     public function __construct() {
         $this->db = (new Database())->connect();
+        $this->registersModel = new RegistersModel();
     }
 
     // Fetch all student data
@@ -17,12 +20,16 @@ class StudentDataModel {
     }
 
     // Insert multiple roll numbers for a class
-    public function createStudentData($starting_roll_number, $ending_roll_number, $class_id) {
+    public function createStudentData($starting_roll_number, $ending_roll_number, $class_id, $major_id) {
         $this->db->beginTransaction();
         try {
             for ($x = $starting_roll_number; $x <= $ending_roll_number; $x++) {
-                $query = "INSERT INTO student_data (rollno, class_id) VALUES (:rollno, :class_id)";
+                // Fetch the registers_id for the current roll number
+                $registers_id = $this->registersModel->getRegisterIdByRollNumberAndClassId($major_id);
+    
+                $query = "INSERT INTO student_data (registers_id, rollno, class_id) VALUES (:registers_id, :rollno, :class_id)";
                 $stmt = $this->db->prepare($query);
+                $stmt->bindValue(':registers_id', $registers_id['id'], PDO::PARAM_INT);
                 $stmt->bindValue(':rollno', $x, PDO::PARAM_INT);
                 $stmt->bindValue(':class_id', $class_id, PDO::PARAM_INT);
                 $stmt->execute();
@@ -34,6 +41,7 @@ class StudentDataModel {
             return false;
         }
     }
+    
 
     // Fetch student data by ID
     public function getStudentDataById($id) {

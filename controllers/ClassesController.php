@@ -1,20 +1,23 @@
 <?php
 
-require_once __DIR__ . '/../models/ClassModel.php';
+require_once __DIR__ . '/../models/ClassesModel.php';
 require_once __DIR__ . '/../models/StudentDataModel.php';
+require_once __DIR__ . '/../models/RegistersModel.php';
 require_once __DIR__ . '/../vendor/autoload.php'; // Lokasi vendor autoloader
 
 use Dotenv\Dotenv;
 
-class ClassController
+class ClassesController
 {
     private $classModel;
     private $studentDataModel;
+    private $registersModel;
 
     public function __construct()
     {
-        $this->classModel = new ClassModel();
+        $this->classModel = new ClassesModel();
         $this->studentDataModel = new StudentDataModel();
+        $this->registersModel = new RegistersModel();
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
         $dotenv->load();
     }
@@ -46,27 +49,23 @@ class ClassController
     {
         session_start();
         $this->authorize('admin');
-    
+
         $errors = []; // Array untuk menyimpan error
-    
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $name = trim($_POST['name']);
-            $starting_roll_number = trim($_POST['starting_roll_number']);
-            $ending_roll_number = trim($_POST['ending_roll_number']);
-    
+            $class_id = trim($_POST['class_id']);
+            $majorId = trim($_POST['major_id']);
+
             // Validasi input
             if (empty($name)) {
                 $errors['name'] = 'Please enter Class Name';
             }
-    
-            if (empty($starting_roll_number)) {
-                $errors['starting_roll_number'] = 'Please enter Starting Roll Number';
+
+            if (empty($class_id)) {
+                $errors['class_id'] = 'Please enter Class ID';
             }
-    
-            if (empty($ending_roll_number)) {
-                $errors['ending_roll_number'] = 'Please enter Ending Roll Number';
-            }
-    
+
             // Jika ada error, kembalikan ke view dengan error
             if (!empty($errors)) {
                 $_SESSION['errors'] = $errors; // Simpan error dalam session
@@ -74,14 +73,18 @@ class ClassController
                 header('Location: ' . $_ENV['BASE_URL'] . '/class');
                 exit;
             }
-    
+
+            // Calculate starting and ending roll numbers based on registers count
+            $starting_roll_number = 1;
+            $ending_roll_number = $this->registersModel->countRegistersByClassId($class_id);
+
             // Jika validasi berhasil, tambahkan data ke classes
             $class = $this->classModel->createClass($name, $starting_roll_number, $ending_roll_number);
 
             if ($class) {
                 $classId = $class['id'];
                 // Tambahkan roll numbers ke student_data
-                if ($this->studentDataModel->createStudentData($starting_roll_number, $ending_roll_number, $classId)) {
+                if ($this->studentDataModel->createStudentData($starting_roll_number, $ending_roll_number, $classId, $majorId)) {
                     $_SESSION['flash'] = 'Class berhasil ditambahkan beserta student data.';
                 } else {
                     $_SESSION['flash'] = 'Class berhasil, namun gagal menambahkan student data.';
@@ -95,6 +98,7 @@ class ClassController
             }
         }
     }
+
     
 
     /**

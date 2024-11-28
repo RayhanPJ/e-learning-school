@@ -1,8 +1,7 @@
-// models/ClassModel.php
 <?php
 require_once __DIR__ . '/../config/database.php';
 
-class ClassModel {
+class ClassesModel {
     private $db;
 
     public function __construct() {
@@ -29,7 +28,6 @@ class ClassModel {
         // Return data yang baru dibuat
         return $this->getClassById($this->db->lastInsertId());
     }
-    
 
     public function getClassById($id) {
         $query = "SELECT * FROM classes WHERE id = :id";

@@ -28,9 +28,16 @@ class TestController
     public function index()
     {
         session_start();
-        $this->authorize('teacher');
+        $this->authorize('admin');
         $tests = $this->testModel->getAllTests();
         return $tests;
+    }
+
+    public function create()
+    {
+        session_start();
+        $this->authorize('admin');
+        // Tampilan form pembuatan pengguna.
     }
 
     /**
@@ -39,7 +46,7 @@ class TestController
     public function store()
     {
         session_start();
-        $this->authorize('teacher');
+        $this->authorize('admin');
 
         $errors = [];
 
@@ -104,105 +111,105 @@ class TestController
         }
     }
 
-    public function storeAPI()
-{
-    header('Content-Type: application/json');
+//     public function storeAPI()
+// {
+//     header('Content-Type: application/json');
 
-    try {
-        // Mulai sesi
-        session_start();
+//     try {
+//         // Mulai sesi
+//         session_start();
 
-        // Periksa apakah pengguna memiliki izin
-        // $this->authorize('teacher');
+//         // Periksa apakah pengguna memiliki izin
+//         // $this->authorize('admin');
 
-        // Validasi hanya menerima metode POST
-        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            http_response_code(405);
-            echo json_encode(['error' => 'Method not allowed']);
-            return;
-        }
+//         // Validasi hanya menerima metode POST
+//         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+//             http_response_code(405);
+//             echo json_encode(['error' => 'Method not allowed']);
+//             return;
+//         }
 
-        $errors = [];
+//         $errors = [];
 
-        // Ambil data dari body
-        $test_name = trim($_POST['test_name'] ?? '');
-        $test_subject = trim($_POST['subject_name'] ?? '');
-        $test_date = trim($_POST['test_date'] ?? '');
-        $total_questions = trim($_POST['total_questions'] ?? '');
-        $status_id = trim($_POST['test_status'] ?? '');
-        $class_id = trim($_POST['test_class'] ?? '');
-        $teacher_id = trim($_POST['teacher_id'] ?? '');
+//         // Ambil data dari body
+//         $test_name = trim($_POST['test_name'] ?? '');
+//         $test_subject = trim($_POST['subject_name'] ?? '');
+//         $test_date = trim($_POST['test_date'] ?? '');
+//         $total_questions = trim($_POST['total_questions'] ?? '');
+//         $status_id = trim($_POST['test_status'] ?? '');
+//         $class_id = trim($_POST['test_class'] ?? '');
+//         $teacher_id = trim($_POST['teacher_id'] ?? '');
 
-        // Validasi input
-        if (empty($test_name)) {
-            $errors['test_name'] = 'Test Name is required.';
-        }
-        if (empty($test_subject)) {
-            $errors['subject_name'] = 'Subject Name is required.';
-        }
-        if (empty($test_date)) {
-            $errors['test_date'] = 'Test Date is required.';
-        }
+//         // Validasi input
+//         if (empty($test_name)) {
+//             $errors['test_name'] = 'Test Name is required.';
+//         }
+//         if (empty($test_subject)) {
+//             $errors['subject_name'] = 'Subject Name is required.';
+//         }
+//         if (empty($test_date)) {
+//             $errors['test_date'] = 'Test Date is required.';
+//         }
 
-        // Jika ada error, kembalikan respons JSON
-        if (!empty($errors)) {
-            http_response_code(400);
-            echo json_encode([
-                'status' => 'error',
-                'errors' => $errors,
-            ]);
-            return;
-        }
+//         // Jika ada error, kembalikan respons JSON
+//         if (!empty($errors)) {
+//             http_response_code(400);
+//             echo json_encode([
+//                 'status' => 'error',
+//                 'errors' => $errors,
+//             ]);
+//             return;
+//         }
 
-        // Simpan test ke database
-        $test = $this->testModel->createTest(
-            $teacher_id,
-            $test_name,
-            $test_date,
-            $status_id,
-            $test_subject,
-            $total_questions,
-            $class_id
-        );
+//         // Simpan test ke database
+//         $test = $this->testModel->createTest(
+//             $teacher_id,
+//             $test_name,
+//             $test_date,
+//             $status_id,
+//             $test_subject,
+//             $total_questions,
+//             $class_id
+//         );
 
-        if (!$test) {
-            http_response_code(500);
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Failed to create test.',
-            ]);
-            return;
-        }
+//         if (!$test) {
+//             http_response_code(500);
+//             echo json_encode([
+//                 'status' => 'error',
+//                 'message' => 'Failed to create test.',
+//             ]);
+//             return;
+//         }
 
-        $test_id = $test['id'];
+//         $test_id = $test['id'];
 
-        // Ambil semua siswa dalam kelas dan tambahkan ke tabel students
-        $students = $this->studentDataModel->getStudentsByClassId($class_id);
-        foreach ($students as $student) {
-            $rollno = $student['id'];
-            $password = $this->generateRandomString(8 - strlen($test_id)) . $test_id;
-            $this->studentModel->createStudent($test_id, $rollno, $password);
-        }
+//         // Ambil semua siswa dalam kelas dan tambahkan ke tabel students
+//         $students = $this->studentDataModel->getStudentsByClassId($class_id);
+//         foreach ($students as $student) {
+//             $rollno = $student['id'];
+//             $password = $this->generateRandomString(8 - strlen($test_id)) . $test_id;
+//             $this->studentModel->createStudent($test_id, $rollno, $password);
+//         }
 
-        // Kembalikan respons sukses
-        http_response_code(201);
-        echo json_encode([
-            'status' => 'success',
-            'message' => 'Test created successfully.',
-            'data' => [
-                'test_id' => $test_id,
-            ],
-        ]);
-    } catch (Exception $e) {
-        // Tangkap error dan kembalikan log
-        http_response_code(500);
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'An error occurred.',
-            'error' => $e->getMessage(),
-        ]);
-    }
-}
+//         // Kembalikan respons sukses
+//         http_response_code(201);
+//         echo json_encode([
+//             'status' => 'success',
+//             'message' => 'Test created successfully.',
+//             'data' => [
+//                 'test_id' => $test_id,
+//             ],
+//         ]);
+//     } catch (Exception $e) {
+//         // Tangkap error dan kembalikan log
+//         http_response_code(500);
+//         echo json_encode([
+//             'status' => 'error',
+//             'message' => 'An error occurred.',
+//             'error' => $e->getMessage(),
+//         ]);
+//     }
+// }
 
 
     /**
@@ -211,7 +218,7 @@ class TestController
     public function delete($id)
     {
         session_start();
-        $this->authorize('teacher');
+        $this->authorize('admin');
 
         if ($this->testModel->deleteTest($id)) {
             $_SESSION['flash'] = 'Test berhasil dihapus.';

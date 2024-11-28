@@ -3,13 +3,13 @@
 require_once __DIR__ . '/../controllers/UserController.php';  // Pastikan path relatif benar
 require_once __DIR__ . '/../controllers/AuthController.php';  // Pastikan path relatif benar
 require_once __DIR__ . '/../controllers/DashboardController.php';  // Pastikan path relatif benar
-require_once __DIR__ . '/../controllers/ClassController.php';  // Pastikan path relatif benar
+require_once __DIR__ . '/../controllers/ClassesController.php';  // Pastikan path relatif benar
 require_once __DIR__ . '/../controllers/TestController.php';  // Pastikan path relatif benar
 
 $controller = new UserController();
 $dashboardController = new DashboardController();
 $authController = new AuthController();
-$classController = new ClassController();
+$classController = new ClassesController();
 $testController = new TestController();
 
 // Ambil request URI dan metode request
@@ -109,22 +109,20 @@ switch (true) {
         break;
 
     // Rute untuk mendapatkan daftar pengguna
-    case $requestUri === '/test' && $requestSrv === 'GET':
-        $test = $testController->index();
-        require_once __DIR__ . '/../views/pages/management/test/list.php';  // Pastikan path relatif benar
-        break;
+    // case $requestUri === '/test' && $requestSrv === 'GET':
+    //     $test = $testController->index();
+    //     require_once __DIR__ . '/../views/pages/management/test/list.php';  // Pastikan path relatif benar
+    //     break;
 
     // Rute untuk menampilkan form pembuatan pengguna
-    // case $requestUri === '/test-create' && $requestSrv === 'GET':
-    //     $testController->create();
-    //     require_once __DIR__ . '/../views/pages/management/test/add.php';
-    //     break;
+    case $requestUri === '/test-create' && $requestSrv === 'GET':
+        $testController->create();
+        require_once __DIR__ . '/../views/pages/management/test/add.php';
+        break;
 
     // Rute untuk menyimpan pengguna baru
     case $requestUri === '/tests-store' && $requestSrv === 'POST':
-        // echo 'test';
-        // json_encode($_POST);
-        $testController->storeAPI();
+        $testController->store();
         break;
 
     // // Rute untuk menampilkan form edit pengguna
