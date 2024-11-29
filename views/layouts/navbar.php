@@ -9,13 +9,14 @@
                 </li>
 
                 <li class="has-submenu">
-                    <a href="#"><i class="mdi mdi-layers"></i>Management</a>
                     <?php if($_SESSION['role'] == 'admin'): ?>
+                    <a href="#"><i class="mdi mdi-layers"></i>Management</a>
                     <ul class="submenu">
                         <li><a href="<?= $_ENV['BASE_URL']; ?>/users">Users</a></li>
                         <li><a href="<?= $_ENV['BASE_URL']; ?>/class">Class</a></li>
                     </ul>
                     <?php endif ?>
+                    <!-- <a href=""><i class="mdi mdi"></i></a> -->
                 </li>
 
             </ul>

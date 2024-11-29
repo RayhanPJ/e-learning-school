@@ -20,27 +20,29 @@ class StudentDataModel {
     }
 
     // Insert multiple roll numbers for a class
-    public function createStudentData($starting_roll_number, $ending_roll_number, $class_id) {
-        $this->db->beginTransaction();
-        try {
-            for ($x = $starting_roll_number; $x <= $ending_roll_number; $x++) {
-                // Fetch the registers_id for the current roll number
-                $registers_id = $this->registersModel->getRegisterIdByRollNumberAndClassId($class_id);
-    
-                $query = "INSERT INTO student_data (registers_id, rollno, class_id) VALUES (:registers_id, :rollno, :class_id)";
-                $stmt = $this->db->prepare($query);
-                $stmt->bindValue(':registers_id', $registers_id['id'], PDO::PARAM_INT);
-                $stmt->bindValue(':rollno', $x, PDO::PARAM_INT);
-                $stmt->bindValue(':class_id', $class_id, PDO::PARAM_INT);
-                $stmt->execute();
-            }
-            $this->db->commit();
-            return true;
-        } catch (Exception $e) {
-            $this->db->rollBack();
-            return false;
+    public function createStudentData($registers_id, $major_id) {
+        // Get the count of registers with the same major_id
+        $countResult = $this->registersModel->countRegisterByMajorId($major_id);
+        $rollno = 0;
+
+        // If countResult is not empty, get the count
+        if ($countResult) {
+            $rollno = $countResult['count'] + 1; // Increment by 1 for the new entry
+        } else {
+            $rollno = 1; // If no registers exist, start with roll number 1
         }
+
+        // Insert the new student data
+        $queryInsert = "INSERT INTO student_data (registers_id, rollno, major_id) VALUES (:registers_id, :rollno, :major_id)";
+        $stmtInsert = $this->db->prepare($queryInsert);
+        $stmtInsert->bindValue(':registers_id', $registers_id);
+        $stmtInsert->bindValue(':rollno', $rollno);
+        $stmtInsert->bindValue(':major_id', $major_id);
+        return $stmtInsert->execute();
+
     }
+    
+    
     
 
     // Fetch student data by ID

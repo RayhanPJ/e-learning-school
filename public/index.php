@@ -5,12 +5,14 @@ require_once __DIR__ . '/../controllers/AuthController.php';  // Pastikan path r
 require_once __DIR__ . '/../controllers/DashboardController.php';  // Pastikan path relatif benar
 require_once __DIR__ . '/../controllers/ClassesController.php';  // Pastikan path relatif benar
 require_once __DIR__ . '/../controllers/TestController.php';  // Pastikan path relatif benar
+require_once __DIR__ . '/../controllers/RegistersController.php';  // Pastikan path relatif benar
 
 $controller = new UserController();
 $dashboardController = new DashboardController();
 $authController = new AuthController();
 $classController = new ClassesController();
 $testController = new TestController();
+$registersController = new RegistersController();
 
 // Ambil request URI dan metode request
 $requestUri = $_SERVER['REQUEST_URI'];
@@ -69,6 +71,12 @@ switch (true) {
     case preg_match('/^\/users\/update\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'POST':
         $controller->update($matches[1]);
         break;
+    
+    // Rute untuk get invoice pengguna
+    case preg_match('/^\/users-invoice\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
+        $user = $registersController->invoice($matches[1]);
+        require_once __DIR__ . '/../views/pages/invoice/invoice.php';
+        break;
 
     // Rute untuk menghapus pengguna
     case preg_match('/^\/users\/delete\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
@@ -115,6 +123,15 @@ switch (true) {
     //     break;
 
     // Rute untuk menampilkan form pembuatan pengguna
+    case $requestUri === '/registers-create' && $requestSrv === 'GET':
+        $registers['majors'] = $registersController->create();
+        require_once __DIR__ . '/../views/pages/student/add.php';
+        break;
+    case $requestUri === '/register-store' && $requestSrv === 'POST':
+        $registersController->store();
+        break;
+    
+    // Rute untuk menampilkan form pembuatan test
     case $requestUri === '/test-create' && $requestSrv === 'GET':
         $testController->create();
         require_once __DIR__ . '/../views/pages/management/test/add.php';

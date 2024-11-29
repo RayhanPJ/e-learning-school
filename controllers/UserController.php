@@ -155,7 +155,7 @@ class UserController
     /**
      * Memeriksa hak akses pengguna berdasarkan peran.
      */
-    private function authorize($requiredRole)
+    private function authorize($requiredRole = null)
     {
         if (!isset($_SESSION['user_id'])) {
             header('Location: ' . $_ENV['BASE_URL'] . '/login');

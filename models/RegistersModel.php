@@ -38,14 +38,14 @@ class RegistersModel {
 
     // Method to create a new register
     public function createRegister($name, $date_of_birth, $phone, $major_id) {
-        $query = "INSERT INTO registers (name, date_of_birth, phone, major_id, status) 
-                  VALUES (:name, :date_of_birth, :phone, :major_id, :status)";
+        $query = "INSERT INTO registers (name, date_of_birth, phone, major_id, status_payment) 
+                  VALUES (:name, :date_of_birth, :phone, :major_id, :status_payment)";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':name', $name);
         $stmt->bindValue(':date_of_birth', $date_of_birth);
         $stmt->bindValue(':phone', $phone);
         $stmt->bindValue(':major_id', $major_id);
-        $stmt->bindValue(':status', false,PDO::PARAM_BOOL);
+        $stmt->bindValue(':status_payment', false);
         $stmt->execute();
 
         // Return the newly created register
@@ -57,6 +57,14 @@ class RegistersModel {
         $query = "SELECT * FROM registers WHERE id = :id";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function countRegisterByMajorId($major_id) {
+        $query = "SELECT * FROM registers WHERE major_id = :major_id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':major_id', $major_id);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
