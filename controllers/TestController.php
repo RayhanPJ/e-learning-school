@@ -37,6 +37,8 @@ class TestController
     {
         session_start();
         $this->authorize('admin');
+
+        require_once __DIR__ . '/../views/pages/management/test/add.php';
         // Tampilan form pembuatan pengguna.
     }
 

@@ -26,10 +26,11 @@ class MajorModel {
     }
 
     // Method to create a new major
-    public function createMajor($name) {
-        $query = "INSERT INTO major (name) VALUES (:name)";
+    public function createMajor($name, $price) {
+        $query = "INSERT INTO major (name, price) VALUES (:name, :price)";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':name', $name);
+        $stmt->bindValue(':price', $price);
         $stmt->execute();
 
         // Return the newly created major
@@ -37,10 +38,11 @@ class MajorModel {
     }
 
     // Method to update a major
-    public function updateMajor($id, $name) {
-        $query = "UPDATE major SET name = :name WHERE id = :id";
+    public function updateMajor($id, $name, $price) {
+        $query = "UPDATE major SET name = :name, price = :price WHERE id = :id";
         $stmt = $this->db->prepare($query);
         $stmt->bindValue(':name', $name);
+        $stmt->bindValue(':price', $price);
         $stmt->bindValue(':id', $id);
         return $stmt->execute();
     }

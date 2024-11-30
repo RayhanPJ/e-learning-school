@@ -11,6 +11,11 @@ class AuthController
         $this->authModel = new AuthModel();
     }
 
+    public function index()
+    {
+        require_once __DIR__ . '/../views/pages/auth/login.php';
+    }
+
     /**
      * Menangani proses login.
      */

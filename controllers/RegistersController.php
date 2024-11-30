@@ -17,6 +17,8 @@ class RegistersController {
     // Method to show the registration form
     public function create() {
         $majors = $this->majorModel->getAllMajors();
+
+        require_once __DIR__ . '/../views/pages/student/add.php';
         return $majors;
     }
 
@@ -82,6 +84,8 @@ class RegistersController {
     public function invoice($id)
     {
         session_start();
+
+        require_once __DIR__ . '/../views/pages/invoice/invoice.php';
         return $this->registersModel->getRegisterById($id);
     }
 

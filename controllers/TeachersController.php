@@ -5,7 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php'; // Lokasi vendor autoloader
 
 use Dotenv\Dotenv;
 
-class UserController
+class TeachersController
 {
     private $userModel;
 
@@ -25,7 +25,7 @@ class UserController
         $users = $this->userModel->getAllUsers();
         // var_dump($users);die;
         $this->authorize('admin'); // Hanya admin yang bisa mengakses
-
+        require_once __DIR__ . '/../views/pages/management/users/list.php';
         return $users; // Data untuk view
     }
 
@@ -36,7 +36,8 @@ class UserController
     {
         session_start();
         $this->authorize('admin');
-        // Tampilan form pembuatan pengguna.
+
+        require_once __DIR__ . '/../views/pages/management/users/add.php';
     }
 
     /**
@@ -89,7 +90,10 @@ class UserController
     {
         session_start();
         $this->authorize('admin');
-        return $this->userModel->getUserById($id);
+        $user = $this->userModel->getUserById($id);
+
+        require_once __DIR__ . '/../views/pages/management/users/edit.php';
+        return $user;
     }
 
     /**

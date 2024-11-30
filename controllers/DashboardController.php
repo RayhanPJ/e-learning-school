@@ -23,6 +23,8 @@ class DashboardController
             header('Location: '. $_ENV['BASE_URL']. '/login');
             exit;
         }
+        
+        require_once __DIR__ . '/../views/dashboard.php';
     }
 
     /**
