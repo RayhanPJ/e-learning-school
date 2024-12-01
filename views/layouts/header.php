@@ -7,9 +7,8 @@ $base_url = "/e-learning-school/public/assets/template";
 
             <!-- Logo container-->
             <div class="logo">
-                <a href="index.html" class="logo">
-                    <img src="<?= $base_url; ?>/images/logo-sm.png" alt="" height="22" class="logo-small">
-                    <img src="<?= $base_url; ?>/images/logo.png" alt="" height="16" class="logo-large">
+                <a href="" class="logo ">
+                    <span class="text-dark">SEKOLAH HEBAT</span>
                 </a>
             </div>
             <!-- End Logo container-->
@@ -23,5 +22,9 @@ $base_url = "/e-learning-school/public/assets/template";
     <!-- end topbar-main -->
 
     <!-- MENU Start -->
-    <?php require('navbar.php');?>
+    
+    <?php if($_SESSION['role'] == 'guest'): ?>
+    <?php else : ?>
+        <?php require('navbar.php');?>
+    <?php endif ?>
 </header>       

@@ -30,7 +30,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php $i=1; foreach ($major as $item): ?>
+                                <?php $i=1; foreach ($majors as $item): ?>
                                     <tr>
                                         <td><?= $i++ ?></td>
                                         <td><?= $item['name'] ?></td>

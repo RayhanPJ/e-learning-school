@@ -5,7 +5,7 @@
             <ul class="navigation-menu">
 
                 <li class="has-submenu">
-                    <a href="index.html"><i class="mdi mdi-airplay"></i>Dashboard</a>
+                    <a href="<?= $_ENV['BASE_URL']; ?>/dashboard"><i class="mdi mdi-airplay"></i>Dashboard</a>
                 </li>
 
                 <li class="has-submenu">
@@ -14,6 +14,7 @@
                     <ul class="submenu">
                         <li><a href="<?= $_ENV['BASE_URL']; ?>/users">Users</a></li>
                         <li><a href="<?= $_ENV['BASE_URL']; ?>/major">Major</a></li>
+                        <li><a href="<?= $_ENV['BASE_URL']; ?>/registers">Registers</a></li>
                     </ul>
                     <?php endif ?>
                     <!-- <a href=""><i class="mdi mdi"></i></a> -->

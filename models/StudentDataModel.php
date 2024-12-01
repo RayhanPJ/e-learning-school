@@ -27,7 +27,7 @@ class StudentDataModel {
 
         // If countResult is not empty, get the count
         if ($countResult) {
-            $rollno = $countResult['count'] + 1; // Increment by 1 for the new entry
+            $rollno = $countResult + 1; // Increment by 1 for the new entry
         } else {
             $rollno = 1; // If no registers exist, start with roll number 1
         }
@@ -42,9 +42,6 @@ class StudentDataModel {
 
     }
     
-    
-    
-
     // Fetch student data by ID
     public function getStudentDataById($id) {
         $query = "SELECT * FROM student_data WHERE id = :id";
@@ -54,7 +51,7 @@ class StudentDataModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function getStudentsByClassId($class_id) {
+    public function getStudentsByMajorId($major_id) {
         $query = "
             SELECT 
                 sd.id,
@@ -63,25 +60,28 @@ class StudentDataModel {
                 r.phone,
                 r.major_id,
                 m.name AS major_name,
-                r.status,
+                m.price AS major_price,  -- Assuming 'price' is a column in the 'major' table
+                r.status_payment,
                 sd.rollno,
                 sd.registers_id
             FROM 
                 student_data sd
             JOIN 
                 registers r ON sd.registers_id = r.id
-            LEFT JOIN 
-                major m ON r.major_id = m.id
+            JOIN 
+                major m ON sd.major_id = m.id  -- Join to get major details
             WHERE 
-                sd.class_id = :class_id
+                sd.major_id = :major_id
+                AND r.status_payment = 1  -- Filter for students with paid status
         ";
         
         $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':class_id', $class_id, PDO::PARAM_INT);
+        $stmt->bindValue(':major_id', $major_id, PDO::PARAM_INT);  // Corrected the parameter binding
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }    
+    }
+      
 
     // Update student data
     public function updateStudentData($id, $rollno, $class_id) {

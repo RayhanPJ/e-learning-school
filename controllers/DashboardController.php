@@ -1,44 +1,43 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../controllers/BaseController.php';
 
-class DashboardController
+class DashboardController extends BaseController
 {
     private $db;
 
     public function __construct()
     {
-        // Membuat koneksi database menggunakan Database class
+        parent::__construct(); // Memanggil konstruktor BaseController
         $this->db = (new Database())->connect();
     }
 
     /**
-     * Menangani proses login.
+     * Menampilkan halaman dashboard.
      */
     public function dashboard()
     {
-        session_start();
-        // Periksa apakah pengguna sudah login
-        if (!isset($_SESSION['user_id'])) {
-            // Jika belum login, redirect ke halaman login
-            header('Location: '. $_ENV['BASE_URL']. '/login');
-            exit;
-        }
-        
+        $this->checkUserLogin();
         require_once __DIR__ . '/../views/dashboard.php';
     }
 
     /**
-     * Menangani proses logout.
+     * Memeriksa apakah pengguna sudah login.
      */
-    public function logout()
+    private function checkUserLogin()
     {
-        // Hapus sesi pengguna
-        session_start();
-        session_unset(); // Menghapus semua session
-        session_destroy(); // Menghancurkan sesi
+        if (!isset($_SESSION['user_id'])) {
+            $this->redirectToLogin();
+        }
+    }
 
-        // Redirect ke halaman login
-        header('Location: '. $_ENV['BASE_URL']. '/login');
+    /**
+     * Mengarahkan pengguna ke halaman login.
+     */
+    private function redirectToLogin()
+    {
+        header('Location: ' . $_ENV['BASE_URL'] . '/login');
         exit;
     }
 }
+?>

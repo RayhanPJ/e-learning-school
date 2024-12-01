@@ -12,7 +12,7 @@ $base_url = "/e-learning-school/public/assets/template";
         <meta content="Mannatthemes" name="author" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-        <link rel="shortcut icon" href="<?= $base_url; ?>/images/favicon.ico">
+        <link rel="shortcut icon" href="<?= $base_url; ?>/images/logo.ico">
         <!-- DataTables -->
         <link href="<?= $base_url; ?>/plugins/datatables/dataTables.bootstrap4.min.css" rel="stylesheet" type="text/css" />
         <link href="<?= $base_url; ?>/plugins/datatables/buttons.bootstrap4.min.css" rel="stylesheet" type="text/css" />

@@ -1,6 +1,6 @@
-<?php 
-require(__DIR__ . '/../../layouts/meta.php'); ?>
-<?php require(__DIR__ . '/../../layouts/header.php');?>
+<?php require(__DIR__ . '/../../layouts/meta.php'); ?>
+<!-- Navigation Bar-->
+<?php require(__DIR__ . '/../../layouts/header.php'); ?>
 <?php
 if (isset($_SESSION['errors'])) {
     $errors = $_SESSION['errors'];
@@ -15,20 +15,20 @@ if (isset($_SESSION['errors'])) {
                 <div class="card m-b-30">
                     <div class="card-body">
 
-                        <h2 class="mt-0 header-title">Please register your account here!</h2>
+                        <h2 class="mt-0 header-title">Edit Student Information</h2>
                         <!-- Flash Message -->
                         <?php if (isset($_SESSION['flash'])): ?>
                             <div class="alert alert-success" role="alert">
                                 <?= $_SESSION['flash']; ?>
-                                <?php unset($_SESSION['flash']); // Hapus flash setelah ditampilkan ?>
+                                <?php unset($_SESSION['flash']); // Remove flash after displaying ?>
                             </div>
                         <?php endif; ?>
 
-                        <form method="POST" action="<?= $_ENV['BASE_URL']; ?>/registers-store">
+                        <form method="POST" action="<?= $_ENV['BASE_URL']; ?>/registers-update/<?= $registers['id']; ?>">
                             <div class="form-group">
                                 <label>Name</label>
                                 <input type="text" class="form-control" id="name" 
-                                    name="name" placeholder="Enter your name" value="<?= $errors['name'] ?? '' ?>" />
+                                    name="name" placeholder="Enter your name" value="<?= $registers['name'] ?? '' ?>" />
                                 <span id="name_error" class="error text-danger">
                                     <?= $errors['name'] ?? '' ?>
                                 </span>
@@ -37,7 +37,7 @@ if (isset($_SESSION['errors'])) {
                             <div class="form-group">
                                 <label>Date of Birth</label>
                                 <input type="date" class="form-control" id="date_of_birth" 
-                                    name="date_of_birth" value="<?= $errors['date_of_birth'] ?? '' ?>" />
+                                    name="date_of_birth" value="<?= $registers['date_of_birth'] ?? '' ?>" />
                                 <span id="date_of_birth_error" class="error text-danger">
                                     <?= $errors['date_of_birth'] ?? '' ?>
                                 </span>
@@ -46,7 +46,7 @@ if (isset($_SESSION['errors'])) {
                             <div class="form-group">
                                 <label>Phone</label>
                                 <input type="text" class="form-control" id="phone" 
-                                    name="phone" placeholder="Enter your phone number" value="<?= $errors['phone'] ?? '' ?>" />
+                                    name="phone" placeholder="Enter your phone number" value="<?= $registers['phone'] ?? '' ?>" />
                                 <span id="phone_error" class="error text-danger">
                                     <?= $errors['phone'] ?? '' ?>
                                 </span>
@@ -57,8 +57,8 @@ if (isset($_SESSION['errors'])) {
                                 <select class="form-control" id="major_id" name="major_id">
                                     <option value="">Select Major</option>
                                     <?php foreach ($majors as $major): ?>
-                                        <option value="<?= $major['id'] ?>" <?= (isset($errors['major_id']) && $errors['major_id'] == $major['id']) ? 'selected' : '' ?>>
-                                            <?= $major['name'] . ' - Rp.' . number_format($major['price']) ?> 
+                                        <option value="<?= $major['id'] ?>" <?= ($registers['major_id'] == $major['id']) ? 'selected' : '' ?>>
+                                            <?= $major['name'] . ' - Rp.' . $major['price'] ?>
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
@@ -67,7 +67,7 @@ if (isset($_SESSION['errors'])) {
                                 </span>
                             </div>
 
-                            <button type="submit" class="btn btn-primary ml-2">Submit</button>
+                            <button type="submit" class="btn btn-primary ml-2">Update</button>
                         </form>
                     </div>
                 </div>
@@ -76,8 +76,9 @@ if (isset($_SESSION['errors'])) {
     </div>
 </div>
 
-
 <!-- Footer -->
 <?php require(__DIR__ . '/../../layouts/footer.php'); ?>
 <!-- End Footer -->
-<?php require(__DIR__ .'/../../layouts/script.php'); ?>
+
+<!-- Scripts -->
+<?php require(__DIR__ . '/../../layouts/script.php'); ?>

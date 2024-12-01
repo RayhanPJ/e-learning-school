@@ -1,13 +1,13 @@
 <?php
-
 require_once __DIR__ . '/../models/TestModel.php';
 require_once __DIR__ . '/../models/StudentDataModel.php';
 require_once __DIR__ . '/../models/StudentModel.php';
+require_once __DIR__ . '/../controllers/BaseController.php';
 require_once __DIR__ . '/../vendor/autoload.php'; // Lokasi vendor autoloader
 
 use Dotenv\Dotenv;
 
-class TestController
+class TestController extends BaseController
 {
     private $testModel;
     private $studentDataModel;
@@ -15,6 +15,7 @@ class TestController
 
     public function __construct()
     {
+        parent::__construct(); // Memanggil konstruktor BaseController
         $this->testModel = new TestModel();
         $this->studentDataModel = new StudentDataModel();
         $this->studentModel = new StudentModel();
@@ -27,19 +28,18 @@ class TestController
      */
     public function index()
     {
-        session_start();
         $this->authorize('admin');
         $tests = $this->testModel->getAllTests();
         return $tests;
     }
 
+    /**
+     * Menampilkan halaman untuk membuat test baru.
+     */
     public function create()
     {
-        session_start();
         $this->authorize('admin');
-
         require_once __DIR__ . '/../views/pages/management/test/add.php';
-        // Tampilan form pembuatan pengguna.
     }
 
     /**
@@ -47,180 +47,62 @@ class TestController
      */
     public function store()
     {
-        session_start();
         $this->authorize('admin');
 
-        $errors = [];
-
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $test_name = trim($_POST['test_name']);
-            $test_subject = trim($_POST['subject_name']);
-            $test_date = trim($_POST['test_date']);
-            $total_questions = trim($_POST['total_questions']);
-            $status_id = trim($_POST['test_status']);
-            $class_id = trim($_POST['test_class']);
-            $teacher_id = trim($_POST['teacher_id']);
-            // $teacher_id = $_SESSION['user_id'];
-
-            // Validasi input
-            if (empty($test_name)) {
-                $errors['test_name'] = 'Test Name is required.';
-            }
-            if (empty($test_subject)) {
-                $errors['subject_name'] = 'Subject Name is required.';
-            }
-            if (empty($test_date)) {
-                $errors['test_date'] = 'Test Date is required.';
-            }
-
-            if (!empty($errors)) {
-                $_SESSION['errors'] = $errors;
-                $_SESSION['old'] = $_POST;
-                header('Location: ' . $_ENV['BASE_URL'] . '/test-create');
-                exit;
-            }
-
-            // Simpan test ke database
-            $test = $this->testModel->createTest(
-                $teacher_id,
-                $test_name,
-                $test_date,
-                $status_id,
-                $test_subject,
-                $total_questions,
-                $class_id
-            );
-
-            if ($test) {
-                $test_id = $test['id'];
-
-                // Ambil semua siswa dalam kelas dan tambahkan ke tabel students
-                $students = $this->studentDataModel->getStudentsByClassId($class_id);
-                foreach ($students as $student) {
-                    $rollno = $student['id'];
-                    $$username = $student['$username'];
-                    $password = $this->generateRandomString(8 - strlen($test_id)) . $test_id;
-                    $this->studentModel->createStudent($test_id, $rollno,$username, $password);
-                }
-
-                $_SESSION['flash'] = 'Test berhasil dibuat.';
-                header('Location: ' . $_ENV['BASE_URL'] . '/tests');
-                exit;
-            } else {
-                $_SESSION['flash'] = 'Gagal membuat test.';
-                header('Location: ' . $_ENV['BASE_URL'] . '/test-create');
-                exit;
-            }
+            $this->handleStore();
         }
     }
 
-//     public function storeAPI()
-// {
-//     header('Content-Type: application/json');
+    private function handleStore()
+    {
+        $errors = $this->validateTestInputs($_POST);
 
-//     try {
-//         // Mulai sesi
-//         session_start();
+        // Jika ada error, kembalikan ke view dengan error
+        if (!empty($errors)) {
+            $this->handleValidationErrors($errors, $_POST, '/test-create');
+        }
 
-//         // Periksa apakah pengguna memiliki izin
-//         // $this->authorize('admin');
+        // Simpan test ke database
+        $test = $this->testModel->createTest(
+            $_POST['teacher_id'],
+            trim($_POST['test_name']),
+            trim($_POST['test_date']),
+            trim($_POST['test_status']),
+            trim($_POST['subject_name']),
+            trim($_POST['total_questions']),
+            trim($_POST['test_major'])
+        );
 
-//         // Validasi hanya menerima metode POST
-//         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-//             http_response_code(405);
-//             echo json_encode(['error' => 'Method not allowed']);
-//             return;
-//         }
+        if ($test) {
+            $this->handleStudentCreation($test['id'], $_POST['test_major']);
+            $_SESSION['flash'] = 'Test berhasil dibuat.';
+            header('Location: ' . $_ENV['BASE_URL'] . '/tests');
+            exit;
+        } else {
+            $_SESSION['flash'] = 'Gagal membuat test.';
+            header('Location: ' . $_ENV['BASE_URL'] . '/test-create');
+            exit;
+        }
+    }
 
-//         $errors = [];
-
-//         // Ambil data dari body
-//         $test_name = trim($_POST['test_name'] ?? '');
-//         $test_subject = trim($_POST['subject_name'] ?? '');
-//         $test_date = trim($_POST['test_date'] ?? '');
-//         $total_questions = trim($_POST['total_questions'] ?? '');
-//         $status_id = trim($_POST['test_status'] ?? '');
-//         $class_id = trim($_POST['test_class'] ?? '');
-//         $teacher_id = trim($_POST['teacher_id'] ?? '');
-
-//         // Validasi input
-//         if (empty($test_name)) {
-//             $errors['test_name'] = 'Test Name is required.';
-//         }
-//         if (empty($test_subject)) {
-//             $errors['subject_name'] = 'Subject Name is required.';
-//         }
-//         if (empty($test_date)) {
-//             $errors['test_date'] = 'Test Date is required.';
-//         }
-
-//         // Jika ada error, kembalikan respons JSON
-//         if (!empty($errors)) {
-//             http_response_code(400);
-//             echo json_encode([
-//                 'status' => 'error',
-//                 'errors' => $errors,
-//             ]);
-//             return;
-//         }
-
-//         // Simpan test ke database
-//         $test = $this->testModel->createTest(
-//             $teacher_id,
-//             $test_name,
-//             $test_date,
-//             $status_id,
-//             $test_subject,
-//             $total_questions,
-//             $class_id
-//         );
-
-//         if (!$test) {
-//             http_response_code(500);
-//             echo json_encode([
-//                 'status' => 'error',
-//                 'message' => 'Failed to create test.',
-//             ]);
-//             return;
-//         }
-
-//         $test_id = $test['id'];
-
-//         // Ambil semua siswa dalam kelas dan tambahkan ke tabel students
-//         $students = $this->studentDataModel->getStudentsByClassId($class_id);
-//         foreach ($students as $student) {
-//             $rollno = $student['id'];
-//             $password = $this->generateRandomString(8 - strlen($test_id)) . $test_id;
-//             $this->studentModel->createStudent($test_id, $rollno, $password);
-//         }
-
-//         // Kembalikan respons sukses
-//         http_response_code(201);
-//         echo json_encode([
-//             'status' => 'success',
-//             'message' => 'Test created successfully.',
-//             'data' => [
-//                 'test_id' => $test_id,
-//             ],
-//         ]);
-//     } catch (Exception $e) {
-//         // Tangkap error dan kembalikan log
-//         http_response_code(500);
-//         echo json_encode([
-//             'status' => 'error',
-//             'message' => 'An error occurred.',
-//             'error' => $e->getMessage(),
-//         ]);
-//     }
-// }
-
+    private function handleStudentCreation($test_id, $major_id)
+    {
+        // Ambil semua siswa dalam kelas dan tambahkan ke tabel students
+        $students = $this->studentDataModel->getStudentsByMajorId($major_id);
+        foreach ($students as $student) {
+            $rollno = $student['id'];
+            $username = $student['username']; // Perbaiki variabel dari $$username menjadi $username
+            $password = $this->generateRandomString(8 - strlen($test_id)) . $test_id;
+            $this->studentModel->createStudent($test_id, $rollno, $username, $password);
+        }
+    }
 
     /**
      * Menghapus test dari database.
      */
     public function delete($id)
     {
-        session_start();
         $this->authorize('admin');
 
         if ($this->testModel->deleteTest($id)) {
@@ -230,6 +112,35 @@ class TestController
         } else {
             die('Gagal menghapus test.');
         }
+    }
+
+    /**
+     * Memvalidasi input test.
+     */
+    private function validateTestInputs($data)
+    {
+        $errors = [];
+        if (empty(trim($data['test_name']))) {
+            $errors['test_name'] = 'Test Name is required.';
+        }
+        if (empty(trim($data['subject_name']))) {
+            $errors['subject_name'] = 'Subject Name is required.';
+        }
+        if (empty(trim($data['test_date']))) {
+            $errors['test_date'] = 'Test Date is required.';
+        }
+        return $errors;
+    }
+
+    /**
+     * Menangani kesalahan validasi.
+     */
+    private function handleValidationErrors($errors, $oldData, $redirectPath)
+    {
+        $_SESSION['errors'] = $errors; // Simpan error dalam session
+        $_SESSION['old'] = $oldData;    // Simpan data input sebelumnya
+        header('Location: ' . $_ENV['BASE_URL'] . $redirectPath);
+        exit;
     }
 
     /**
@@ -247,20 +158,5 @@ class TestController
 
         return $randomString;
     }
-
-    /**
-     * Memeriksa hak akses pengguna berdasarkan peran.
-     */
-    private function authorize($requiredRole)
-    {
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: ' . $_ENV['BASE_URL'] . '/login');
-            exit;
-        }
-
-        if ($_SESSION['role'] !== $requiredRole) {
-            header('Location: ' . $_ENV['BASE_URL'] . '/dashboard');
-            exit;
-        }
-    }
 }
+?>

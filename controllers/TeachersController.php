@@ -1,16 +1,17 @@
 <?php
-
 require_once __DIR__ . '/../models/UserModel.php';
+require_once __DIR__ . '/../controllers/BaseController.php';
 require_once __DIR__ . '/../vendor/autoload.php'; // Lokasi vendor autoloader
 
 use Dotenv\Dotenv;
 
-class TeachersController
+class TeachersController extends BaseController
 {
     private $userModel;
 
     public function __construct()
     {
+        parent::__construct(); // Memanggil konstruktor BaseController
         $this->userModel = new UserModel();
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
         $dotenv->load();
@@ -21,10 +22,9 @@ class TeachersController
      */
     public function index()
     {
-        session_start();
-        $users = $this->userModel->getAllUsers();
-        // var_dump($users);die;
         $this->authorize('admin'); // Hanya admin yang bisa mengakses
+        $users = $this->userModel->getAllUsers();
+
         require_once __DIR__ . '/../views/pages/management/users/list.php';
         return $users; // Data untuk view
     }
@@ -34,9 +34,7 @@ class TeachersController
      */
     public function create()
     {
-        session_start();
         $this->authorize('admin');
-
         require_once __DIR__ . '/../views/pages/management/users/add.php';
     }
 
@@ -45,41 +43,35 @@ class TeachersController
      */
     public function store()
     {
-        session_start();
         $this->authorize('admin');
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = trim($_POST['username']);
-            $password = trim($_POST['password']);
-            $role = trim('admin');
-    
-            // Validasi input
-            if (empty($username)) {
-                $errors['username'] = 'Please enter Username';
-            }
-    
-            if (empty($password)) {
-                $errors['password'] = 'Please enter Password';
-            }
-    
-            // Jika ada error, kembalikan ke view dengan error
-            if (!empty($errors)) {
-                $_SESSION['errors'] = $errors; // Simpan error dalam session
-                $_SESSION['old'] = $_POST;    // Simpan data input sebelumnya
-                header('Location: ' . $_ENV['BASE_URL'] . '/users-create');
-                exit;
-            }
-    
-            // Jika validasi berhasil, update data
-            if ($this->userModel->createUser($username, $password, $role)) {
-                $_SESSION['flash'] = 'User berhasil ditambahkan.';
-                header('Location: ' . $_ENV['BASE_URL'] . '/class');
-                exit;
-            } else {
-                $_SESSION['flash'] = 'User gagal ditambahkan.';
-                header('Location: ' . $_ENV['BASE_URL'] . '/class');
-                exit;
-            }
+            $this->handleStore();
+        }
+    }
+
+    private function handleStore()
+    {
+        $username = trim($_POST['username']);
+        $password = trim($_POST['password']);
+        $role = 'admin'; // Role default
+
+        $errors = $this->validateUserInputs($username, $password);
+
+        // Jika ada error, kembalikan ke view dengan error
+        if (!empty($errors)) {
+            $this->handleValidationErrors($errors, $_POST, '/users-create');
+        }
+
+        // Jika validasi berhasil, simpan data
+        if ($this->userModel->createUser($username, $password, $role)) {
+            $_SESSION['flash'] = 'User berhasil ditambahkan.';
+            header('Location: ' . $_ENV['BASE_URL'] . '/class');
+            exit;
+        } else {
+            $_SESSION['flash'] = 'User gagal ditambahkan.';
+            header('Location: ' . $_ENV['BASE_URL'] . '/class');
+            exit;
         }
     }
 
@@ -88,7 +80,6 @@ class TeachersController
      */
     public function edit($id)
     {
-        session_start();
         $this->authorize('admin');
         $user = $this->userModel->getUserById($id);
 
@@ -101,41 +92,35 @@ class TeachersController
      */
     public function update($id)
     {
-        session_start();
         $this->authorize('admin');
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = trim($_POST['username']);
-            $password = trim($_POST['password']);
-            $role = trim('admin');
-    
-            // Validasi input
-            if (empty($username)) {
-                $errors['username'] = 'Please enter Username';
-            }
-    
-            if (empty($password)) {
-                $errors['password'] = 'Please enter Password';
-            }
-    
-            // Jika ada error, kembalikan ke view dengan error
-            if (!empty($errors)) {
-                $_SESSION['errors'] = $errors; // Simpan error dalam session
-                $_SESSION['old'] = $_POST;    // Simpan data input sebelumnya
-                header('Location: ' . $_ENV['BASE_URL'] . '/users-create');
-                exit;
-            }
-    
-            // Jika validasi berhasil, update data
-            if ($this->userModel->updateUser($id, $username, $password, $role)) {
-                $_SESSION['flash'] = 'User berhasil diperbarui.';
-                header('Location: ' . $_ENV['BASE_URL'] . '/class');
-                exit;
-            } else {
-                $_SESSION['flash'] = 'User gagal diperbarui.';
-                header('Location: ' . $_ENV['BASE_URL'] . '/class');
-                exit;
-            }
+            $this->handleUpdate($id);
+        }
+    }
+
+    private function handleUpdate($id)
+    {
+        $username = trim($_POST['username']);
+        $password = trim($_POST['password']);
+        $role = 'admin'; // Role default
+
+        $errors = $this->validateUserInputs($username, $password);
+
+        // Jika ada error, kembalikan ke view dengan error
+        if (!empty($errors)) {
+            $this->handleValidationErrors($errors, $_POST, '/users-edit/' . $id);
+        }
+
+        // Jika validasi berhasil, update data
+        if ($this->userModel->updateUser($id, $username, $password, $role)) {
+            $_SESSION['flash'] = 'User berhasil diperbarui.';
+            header('Location: ' . $_ENV['BASE_URL'] . '/class');
+            exit;
+        } else {
+            $_SESSION['flash'] = 'User gagal diperbarui.';
+            header('Location: ' . $_ENV['BASE_URL'] . '/class');
+            exit;
         }
     }
 
@@ -144,7 +129,6 @@ class TeachersController
      */
     public function delete($id)
     {
-        session_start();
         $this->authorize('admin');
 
         if ($this->userModel->deleteUser($id)) {
@@ -157,18 +141,29 @@ class TeachersController
     }
 
     /**
-     * Memeriksa hak akses pengguna berdasarkan peran.
+     * Memvalidasi input pengguna.
      */
-    private function authorize($requiredRole = null)
+    private function validateUserInputs($username, $password)
     {
-        if (!isset($_SESSION['user_id'])) {
-            header('Location: ' . $_ENV['BASE_URL'] . '/login');
-            exit;
+        $errors = [];
+        if (empty($username)) {
+            $errors['username'] = 'Please enter Username';
         }
+        if (empty($password)) {
+            $errors['password'] = 'Please enter Password';
+        }
+        return $errors;
+    }
 
-        if ($_SESSION['role'] !== $requiredRole) {
-            header('Location: ' . $_ENV['BASE_URL'] . '/dashboard');
-            exit;
-        }
+    /**
+     * Menangani kesalahan validasi.
+     */
+    private function handleValidationErrors($errors, $oldData, $redirectPath)
+    {
+        $_SESSION['errors'] = $errors; // Simpan error dalam session
+        $_SESSION['old'] = $oldData;    // Simpan data input sebelumnya
+        header('Location: ' . $_ENV['BASE_URL'] . $redirectPath);
+        exit;
     }
 }
+?>

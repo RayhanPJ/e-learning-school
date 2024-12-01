@@ -16,11 +16,22 @@ class RegistersModel {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // Method to count registers by class ID
-    public function countRegistersByClassId($class_id) {
-        $query = "SELECT COUNT(*) as count FROM registers WHERE class_id = :class_id and status = true";
+    public function getAllRegistersWithMajor() {
+        $query = "
+            SELECT r.*, m.name AS major_name, m.price AS major_price
+            FROM registers r
+            JOIN major m ON r.major_id = m.id
+        ";
         $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':class_id', $class_id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Method to count registers by class ID
+    public function countRegisterByMajorId($major_id) {
+        $query = "SELECT COUNT(*) as count FROM registers WHERE major_id = :major_id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':major_id', $major_id, PDO::PARAM_INT);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['count'];
@@ -61,29 +72,54 @@ class RegistersModel {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function countRegisterByMajorId($major_id) {
-        $query = "SELECT * FROM registers WHERE major_id = :major_id";
+    public function getRegisterWithMajorById($id) {
+        $query = "
+            SELECT r.*, m.name AS major_name, m.price AS major_price
+            FROM registers r
+            JOIN major m ON r.major_id = m.id
+            WHERE r.id = :id
+        ";
         $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':major_id', $major_id);
+        $stmt->bindValue(':id', $id);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     // Method to update a register
-    public function updateRegister($id) {
-        $query = "UPDATE registers SET status = :status WHERE id = :id";
+    public function confirmRegister($id, $status_payment) {
+        $query = "UPDATE registers SET status_payment = :status_payment WHERE id = :id";
         $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':status', true,PDO::PARAM_BOOL);
+        $stmt->bindValue(':status_payment', $status_payment);
+        $stmt->bindValue(':id', $id);
+        return $stmt->execute();
+    }
+
+    public function updateRegister($id, $name, $date_of_birth, $phone, $major_id) {
+        $query = "UPDATE registers SET name = :name, date_of_birth = :date_of_birth, phone = :phone, major_id = :major_id WHERE id = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindValue(':name', $name);
+        $stmt->bindValue(':date_of_birth', $date_of_birth);
+        $stmt->bindValue(':phone', $phone);
+        $stmt->bindValue(':major_id', $major_id);
         $stmt->bindValue(':id', $id);
         return $stmt->execute();
     }
 
     // Method to delete a register
     public function deleteRegister($id) {
-        $query = "DELETE FROM registers WHERE id = :id";
-        $stmt = $this->db->prepare($query);
+        // Hapus data dari tabel student_data yang memiliki registers_id yang sama
+        $deleteStudentDataQuery = "DELETE FROM student_data WHERE registers_id = :registers_id";
+        $stmt = $this->db->prepare($deleteStudentDataQuery);
+        $stmt->bindValue(':registers_id', $id);
+        $stmt->execute(); // Eksekusi penghapusan dari student_data
+    
+        // Hapus data dari tabel registers
+        $deleteRegisterQuery = "DELETE FROM registers WHERE id = :id";
+        $stmt = $this->db->prepare($deleteRegisterQuery);
         $stmt->bindValue(':id', $id);
-        return $stmt->execute();
+        
+        return $stmt->execute(); // Mengembalikan hasil eksekusi penghapusan dari registers
     }
+    
 }
 ?>
