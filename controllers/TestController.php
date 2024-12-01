@@ -2,6 +2,8 @@
 require_once __DIR__ . '/../models/TestModel.php';
 require_once __DIR__ . '/../models/StudentDataModel.php';
 require_once __DIR__ . '/../models/StudentModel.php';
+require_once __DIR__ . '/../models/MajorModel.php';
+require_once __DIR__ . '/../models/StatusModel.php';
 require_once __DIR__ . '/../controllers/BaseController.php';
 require_once __DIR__ . '/../vendor/autoload.php'; // Lokasi vendor autoloader
 
@@ -12,6 +14,8 @@ class TestController extends BaseController
     private $testModel;
     private $studentDataModel;
     private $studentModel;
+    private $majorModel;
+    private $statusModel;
 
     public function __construct()
     {
@@ -19,6 +23,8 @@ class TestController extends BaseController
         $this->testModel = new TestModel();
         $this->studentDataModel = new StudentDataModel();
         $this->studentModel = new StudentModel();
+        $this->majorModel = new MajorModel();
+        $this->statusModel = new StatusModel();
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
         $dotenv->load();
     }
@@ -39,7 +45,16 @@ class TestController extends BaseController
     public function create()
     {
         $this->authorize('admin');
+        $majors = $this->majorModel->getAllMajors();
+        $status = $this->statusModel->getAllStatus();
+        
+        $data = [
+            'majors' => $majors,
+            'status' => $status
+        ];
+        
         require_once __DIR__ . '/../views/pages/management/test/add.php';
+        return $data;
     }
 
     /**
