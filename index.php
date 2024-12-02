@@ -1,11 +1,11 @@
 <?php
 // Import Controllers
-require_once __DIR__ . '/../controllers/TeachersController.php';  
-require_once __DIR__ . '/../controllers/AuthController.php';  
-require_once __DIR__ . '/../controllers/DashboardController.php';  
-require_once __DIR__ . '/../controllers/MajorController.php';  
-require_once __DIR__ . '/../controllers/TestController.php';  
-require_once __DIR__ . '/../controllers/RegistersController.php';  
+require_once __DIR__ . '/controllers/TeachersController.php';  
+require_once __DIR__ . '/controllers/AuthController.php';  
+require_once __DIR__ . '/controllers/DashboardController.php';  
+require_once __DIR__ . '/controllers/MajorController.php';  
+require_once __DIR__ . '/controllers/TestController.php';  
+require_once __DIR__ . '/controllers/RegistersController.php';  
 
 // Inisialisasi controller
 $controller = new TeachersController();
@@ -20,7 +20,7 @@ $requestUri = $_SERVER['REQUEST_URI'];
 $requestSrv = $_SERVER['REQUEST_METHOD'];
 
 // Menghilangkan bagian "/e-learning-school/public" dari requestUri
-$base_url = '/e-learning-school/public';
+$base_url = '/e-learning-school';
 $requestUri = str_replace($base_url, '', $requestUri);  // Menghapus base_url dari requestUri
 
 // Redirect ke /registers-create jika mengakses root URL

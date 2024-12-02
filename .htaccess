@@ -1,5 +1,5 @@
 RewriteEngine On
-RewriteBase /e-learning-school/public
+RewriteBase /e-learning-school
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php [L,QSA]
