@@ -22,9 +22,7 @@ if (isset($_SESSION['old'])) {
 
                         <h2 class="mt-0 header-title">Add Test</h2>
 
-                        <form method="POST" action="<?= $_ENV['BASE_URL']; ?>/test-store">
-                            <input type="hidden" name="new_test">
-                            
+                        <form method="POST" action="<?= $_ENV['BASE_URL']; ?>/tests-store">                            
                             <div class="form-group">
                                 <label>Test Name (Title)</label>
                                 <input type="text" class="form-control" name="test_name" 
@@ -93,6 +91,7 @@ if (isset($_SESSION['old'])) {
                                         </span>
                                     </div>
                                 </div>
+                            </div>
                             <button type="submit" class="btn btn-primary ml-2">Submit</button>
                         </form>
                     </div>

@@ -6,6 +6,7 @@ require_once __DIR__ . '/controllers/DashboardController.php';
 require_once __DIR__ . '/controllers/MajorController.php';  
 require_once __DIR__ . '/controllers/TestController.php';  
 require_once __DIR__ . '/controllers/RegistersController.php';  
+require_once __DIR__ . '/controllers/QuestionController.php';  
 
 // Inisialisasi controller
 $controller = new TeachersController();
@@ -14,6 +15,7 @@ $authController = new AuthController();
 $majorController = new MajorController();
 $testController = new TestController();
 $registersController = new RegistersController();
+$questionsController = new QuestionController();
 
 // Ambil request URI dan metode request
 $requestUri = $_SERVER['REQUEST_URI'];
@@ -152,7 +154,22 @@ switch (true) {
         break;
 
     // Rute untuk menampilkan form pembuatan test
-    case $requestUri === '/test-create' && $requestSrv === 'GET':
+    case $requestUri === '/tests' && $requestSrv === 'GET':
+        $testController->index();
+        break;
+
+    // Rute untuk menampilkan form edit registrasi
+    case preg_match('/^\/tests-edit\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
+        $testController->edit($matches[1]);
+        break;
+
+    // Rute untuk menampilkan form detail registrasi
+    case preg_match('/^\/tests-detail\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
+        $testController->detail($matches[1]);
+        break;
+
+    // Rute untuk menampilkan form pembuatan test
+    case $requestUri === '/tests-create' && $requestSrv === 'GET':
         $testController->create();
         break;
 
@@ -162,8 +179,43 @@ switch (true) {
         break;
 
     // Rute untuk menghapus test
-    case preg_match('/^\/test\/delete\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
+    case preg_match('/^\/tests\/delete\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
         $testController->delete($matches[1]);
+        break;
+
+    // Rute untuk menampilkan form pembuatan questions
+    case $requestUri === '/questions' && $requestSrv === 'GET':
+        $questionsController->index();
+        break;
+
+    // Rute untuk menampilkan form edit registrasi
+    case preg_match('/^\/questions-edit\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
+        $questionsController->edit($matches[1]);
+        break;
+
+    // Rute untuk menampilkan form pembuatan questions
+    case preg_match('/^\/questions-create\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
+        $questionsController->create($matches[1]);
+        break;
+
+    // Rute untuk menampilkan form pembuatan questions
+    case preg_match('/^\/questions-show\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
+        $questionsController->showQuestions($matches[1]);
+        break;
+
+    // Rute untuk menyimpan questions baru
+    case $requestUri === '/questions-store' && $requestSrv === 'POST':
+        $questionsController->store();
+        break;
+
+    // Rute untuk menyimpan questions baru
+    case $requestUri === '/submit-answers' && $requestSrv === 'POST':
+        $questionsController->store();
+        break;
+
+    // Rute untuk menghapus questions
+    case preg_match('/^\/questions\/delete\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
+        $questionsController->delete($matches[1]);
         break;
 
     default:

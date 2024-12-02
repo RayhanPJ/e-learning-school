@@ -4,6 +4,7 @@ require_once __DIR__ . '/../models/StudentDataModel.php';
 require_once __DIR__ . '/../models/StudentModel.php';
 require_once __DIR__ . '/../models/MajorModel.php';
 require_once __DIR__ . '/../models/StatusModel.php';
+require_once __DIR__ . '/../models/QuestionModel.php';
 require_once __DIR__ . '/../controllers/BaseController.php';
 require_once __DIR__ . '/../vendor/autoload.php'; // Lokasi vendor autoloader
 
@@ -16,6 +17,7 @@ class TestController extends BaseController
     private $studentModel;
     private $majorModel;
     private $statusModel;
+    private $questionModel;
 
     public function __construct()
     {
@@ -25,6 +27,7 @@ class TestController extends BaseController
         $this->studentModel = new StudentModel();
         $this->majorModel = new MajorModel();
         $this->statusModel = new StatusModel();
+        $this->questionModel = new QuestionModel();
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
         $dotenv->load();
     }
@@ -35,7 +38,9 @@ class TestController extends BaseController
     public function index()
     {
         $this->authorize('admin');
-        $tests = $this->testModel->getAllTests();
+        $tests = $this->testModel->getAllTestsWithStatus();
+
+        require_once __DIR__ . '/../views/pages/management/test/list.php';
         return $tests;
     }
 
@@ -58,6 +63,52 @@ class TestController extends BaseController
     }
 
     /**
+     * Menampilkan halaman untuk membuat test baru.
+     */
+    public function edit($id)
+    {
+        $this->authorize('admin');
+        $majors = $this->majorModel->getAllMajors();
+        $status = $this->statusModel->getAllStatus();
+        $tests = $this->testModel->getTestById($id);
+        $page = 'edit';
+        
+        $data = [
+            'majors' => $majors,
+            'status' => $status,
+            'tests' => $tests,
+            'page' => $page
+        ];
+        
+        require_once __DIR__ . '/../views/pages/management/test/edit.php';
+        return $data;
+    }
+
+    /**
+     * Menampilkan halaman untuk membuat test baru.
+     */
+    public function detail($id)
+    {
+        $this->authorize('admin');
+        $majors = $this->majorModel->getAllMajors();
+        $status = $this->statusModel->getAllStatus();
+        $tests = $this->testModel->getTestById($id);
+        $questions = $this->questionModel->getAllQuestions();
+        $page = 'detail';
+        
+        $data = [
+            'majors' => $majors,
+            'status' => $status,
+            'tests' => $tests,
+            'questions' => $questions,
+            'page' => $page
+        ];
+        
+        require_once __DIR__ . '/../views/pages/management/test/edit.php';
+        return $data;
+    }
+
+    /**
      * Menyimpan test baru ke database.
      */
     public function store()
@@ -71,6 +122,7 @@ class TestController extends BaseController
 
     private function handleStore()
     {
+        // var_dump($_SESSION);die;
         $errors = $this->validateTestInputs($_POST);
 
         // Jika ada error, kembalikan ke view dengan error
@@ -80,17 +132,17 @@ class TestController extends BaseController
 
         // Simpan test ke database
         $test = $this->testModel->createTest(
-            $_POST['teacher_id'],
+            $_SESSION['user_id'],
             trim($_POST['test_name']),
             trim($_POST['test_date']),
             trim($_POST['test_status']),
             trim($_POST['subject_name']),
             trim($_POST['total_questions']),
-            trim($_POST['test_major'])
+            trim($_POST['major_id'])
         );
 
         if ($test) {
-            $this->handleStudentCreation($test['id'], $_POST['test_major']);
+            $this->handleStudentCreation($test['id'], $_POST['major_id']);
             $_SESSION['flash'] = 'Test berhasil dibuat.';
             header('Location: ' . $_ENV['BASE_URL'] . '/tests');
             exit;
@@ -107,7 +159,7 @@ class TestController extends BaseController
         $students = $this->studentDataModel->getStudentsByMajorId($major_id);
         foreach ($students as $student) {
             $rollno = $student['id'];
-            $username = $student['username']; // Perbaiki variabel dari $$username menjadi $username
+            $username = $student['register_name']; // Perbaiki variabel dari $$username menjadi $username
             $password = $this->generateRandomString(8 - strlen($test_id)) . $test_id;
             $this->studentModel->createStudent($test_id, $rollno, $username, $password);
         }

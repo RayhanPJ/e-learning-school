@@ -1,15 +1,18 @@
 <?php
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../models/TestModel.php';
 require_once __DIR__ . '/../controllers/BaseController.php';
 
 class DashboardController extends BaseController
 {
     private $db;
+    private $testModel;
 
     public function __construct()
     {
         parent::__construct(); // Memanggil konstruktor BaseController
         $this->db = (new Database())->connect();
+        $this->testModel = new TestModel();
     }
 
     /**
@@ -18,7 +21,10 @@ class DashboardController extends BaseController
     public function dashboard()
     {
         $this->checkUserLogin();
+        $tests = $this->testModel->getAllTests();
+
         require_once __DIR__ . '/../views/dashboard.php';
+        return $tests;
     }
 
     /**

@@ -15,6 +15,7 @@
                         <li><a href="<?= $_ENV['BASE_URL']; ?>/users">Users</a></li>
                         <li><a href="<?= $_ENV['BASE_URL']; ?>/major">Major</a></li>
                         <li><a href="<?= $_ENV['BASE_URL']; ?>/registers">Registers</a></li>
+                        <li><a href="<?= $_ENV['BASE_URL']; ?>/tests">Tests</a></li>
                     </ul>
                     <?php endif ?>
                     <!-- <a href=""><i class="mdi mdi"></i></a> -->

@@ -33,19 +33,22 @@ class AuthController extends BaseController
         // Ambil data input dari form
         $username = trim($_POST['username']);
         $password = trim($_POST['password']);
-
+    
         // Validasi input
         if ($this->validateLoginInputs($username, $password)) {
             // Gunakan model untuk mencari pengguna
             $user = $this->authModel->login($username, $password);
-
+    
             if ($user) {
                 $this->initializeUserSession($user);
                 // Redirect ke halaman dashboard
                 header('Location: ' . $_ENV['BASE_URL'] . '/dashboard');
                 exit;
             } else {
-                die('Username atau password salah.');
+                // Set flash message for failed login
+                $_SESSION['flash'] = 'Username atau password salah.';
+                header('Location: ' . $_ENV['BASE_URL'] . '/login'); // Redirect back to login
+                exit;
             }
         }
     }
