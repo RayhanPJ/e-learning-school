@@ -55,7 +55,7 @@ switch (true) {
 
     // Rute untuk mendapatkan daftar pengguna
     case $requestUri === '/users' && $requestSrv === 'GET':
-        $users = $controller->index();
+        $controller->index();
         break;
 
     // Rute untuk menampilkan form pembuatan pengguna
@@ -70,7 +70,7 @@ switch (true) {
 
     // Rute untuk menampilkan form edit pengguna
     case preg_match('/^\/users-edit\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
-        $user = $controller->edit((int)$matches[1]); // Konversi ID ke integer
+        $controller->edit((int)$matches[1]); // Konversi ID ke integer
         break;    
 
     // Rute untuk memperbarui pengguna
@@ -80,7 +80,7 @@ switch (true) {
     
     // Rute untuk mendapatkan invoice pengguna
     case preg_match('/^\/users-invoice\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
-        $user = $registersController->invoice($matches[1]);
+        $registersController->invoice($matches[1]);
         break;
 
     // Rute untuk memperbarui invoice
@@ -95,7 +95,7 @@ switch (true) {
 
     // Rute untuk mendapatkan daftar major
     case $requestUri === '/major' && $requestSrv === 'GET':
-        $major = $majorController->index();
+        $majorController->index();
         break;
 
     // Rute untuk menampilkan form pembuatan major
@@ -110,7 +110,7 @@ switch (true) {
 
     // Rute untuk menampilkan form edit major
     case preg_match('/^\/major-edit\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
-        $major = $majorController->edit((int)$matches[1]); // Konversi ID ke integer
+        $majorController->edit((int)$matches[1]); // Konversi ID ke integer
         break;    
 
     // Rute untuk memperbarui major
@@ -125,12 +125,12 @@ switch (true) {
 
     // Rute untuk mendapatkan daftar registrasi
     case $requestUri === '/registers' && $requestSrv === 'GET':
-        $students = $registersController->index();
+        $registersController->index();
         break;
 
     // Rute untuk menampilkan form pembuatan registrasi
     case $requestUri === '/registers-create' && $requestSrv === 'GET':
-        $majors = $registersController->create();
+        $registersController->create();
         break;
 
     // Rute untuk menyimpan registrasi baru
@@ -143,7 +143,7 @@ switch (true) {
         $registersController->edit($matches[1]);
         break;
 
-    // Rute untuk memperbaharui registrasi
+    // Rute untuk memperbarui registrasi
     case preg_match('/^\/registers-update\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'POST':
         $registersController->update($matches[1]);
         break;
@@ -153,22 +153,22 @@ switch (true) {
         $registersController->delete($matches[1]);
         break;
 
-    // Rute untuk menampilkan form pembuatan test
+    // Rute untuk mendapatkan daftar test
     case $requestUri === '/tests' && $requestSrv === 'GET':
         $testController->index();
         break;
 
-        // Rute untuk menampilkan table test report
+    // Rute untuk menampilkan table test report
     case $requestUri === '/tests-report' && $requestSrv === 'GET':
         $testController->report();
         break;
 
-    // Rute untuk menampilkan form edit registrasi
+    // Rute untuk menampilkan form edit test
     case preg_match('/^\/tests-edit\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
         $testController->edit($matches[1]);
         break;
 
-    // Rute untuk menampilkan form detail registrasi
+    // Rute untuk menampilkan form detail test
     case preg_match('/^\/tests-detail\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
         $testController->detail($matches[1]);
         break;
@@ -188,12 +188,12 @@ switch (true) {
         $testController->delete($matches[1]);
         break;
 
-    // Rute untuk menampilkan form pembuatan questions
+    // Rute untuk mendapatkan daftar questions
     case $requestUri === '/questions' && $requestSrv === 'GET':
         $questionsController->index();
         break;
 
-    // Rute untuk menampilkan form edit registrasi
+    // Rute untuk menampilkan form edit questions
     case preg_match('/^\/questions-edit\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
         $questionsController->edit($matches[1]);
         break;
@@ -213,7 +213,7 @@ switch (true) {
         $questionsController->store();
         break;
 
-    // Rute untuk menyimpan questions baru
+    // Rute untuk menyimpan jawaban
     case $requestUri === '/submit-answers' && $requestSrv === 'POST':
         $questionsController->submitAnswers();
         break;
@@ -224,6 +224,6 @@ switch (true) {
         break;
 
     default:
-        echo "404 Not Found";
+        echo "404 Not Found"; // Menampilkan pesan jika rute tidak ditemukan
         break;
 }
