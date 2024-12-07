@@ -9,20 +9,30 @@ class ScoreModel {
     }
 
     // Method untuk membuat entri skor baru
-    public function createScore($test_id, $question_id) {
-        $query = "INSERT INTO score (test_id, question_id, correct_count, wrong_count) VALUES (:test_id, :question_id, 0, 0)";
+    public function createScore($test_id, $question_id, $student_id) {
+        $query = "INSERT INTO score (test_id, question_id, student_id, correct_count, wrong_count) VALUES (:test_id, :question_id, :student_id, 0, 0)";
         $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
         $stmt->bindValue(':test_id', $test_id); // Mengikat nilai test_id
         $stmt->bindValue(':question_id', $question_id); // Mengikat nilai question_id
+        $stmt->bindValue(':student_id', $student_id); // Mengikat nilai student_id
+        return $stmt->execute(); // Mengembalikan true jika berhasil
+    }
+
+    // Method untuk memperbarui jumlah jawaban salah untuk pertanyaan
+    public function updateWrongCount($question_id, $student_id) {
+        $sql = "UPDATE score SET wrong_count = wrong_count + 1 WHERE question_id = :question_id AND student_id = :student_id";
+        $stmt = $this->db->prepare($sql); // Menyiapkan pernyataan
+        $stmt->bindValue(':question_id', $question_id); // Mengikat nilai question_id
+        $stmt->bindValue(':student_id', $student_id); // Mengikat nilai student_id
         return $stmt->execute(); // Mengembalikan true jika berhasil
     }
 
     // Method untuk memperbarui jumlah jawaban benar untuk pertanyaan
-    public function updateCorrectCount($question_id, $correct_count) {
-        $sql = "UPDATE score SET correct_count = :correct_count WHERE question_id = :question_id";
+    public function updateCorrectCount($question_id, $student_id) {
+        $sql = "UPDATE score SET correct_count = correct_count + 1 WHERE question_id = :question_id AND student_id = :student_id";
         $stmt = $this->db->prepare($sql); // Menyiapkan pernyataan
-        $stmt->bindValue(':correct_count', $correct_count); // Mengikat nilai correct_count
         $stmt->bindValue(':question_id', $question_id); // Mengikat nilai question_id
+        $stmt->bindValue(':student_id', $student_id); // Mengikat nilai student_id
         return $stmt->execute(); // Mengembalikan true jika berhasil
     }
 

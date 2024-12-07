@@ -114,5 +114,15 @@ class RegistersModel {
         
         return $stmt->execute(); // Mengembalikan hasil eksekusi penghapusan dari registers
     }
+
+    // Method untuk konfirmasi pembayaran
+    public function confirmRegister($id, $status_payment) {
+        $query = "UPDATE registers SET status_payment = :status_payment WHERE id = :id"; // Kuery untuk mengubah status_payment
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':status_payment', $status_payment); // Mengikat nilai status_payment
+        $stmt->bindValue(':id', $id); //Mengikat nilai ID
+
+        return $stmt->execute(); // Mengembalikan hasil eksekusi update status pembayaran
+    }
 }
 ?>

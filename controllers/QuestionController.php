@@ -199,11 +199,11 @@ class QuestionController extends BaseController
     public function submitAnswers()
     {
         $this->authorize('student'); // Memastikan pengguna memiliki otorisasi sebagai siswa
-    
+
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $student_id = $_SESSION['user_id']; // Mengambil ID siswa dari sesi
             $total_score = 0; // Inisialisasi total skor
-    
+
             foreach ($_POST['q_answer'] as $question_id => $selected_option) {
                 // Mengambil jawaban yang benar untuk pertanyaan
                 $question = $this->questionModel->getQuestionById($question_id);
@@ -211,18 +211,21 @@ class QuestionController extends BaseController
                     // Memeriksa apakah opsi yang dipilih benar
                     if ($question['correctAns'] == $selected_option) {
                         // Memperbarui jumlah jawaban benar di tabel skor
-                        $this->scoreModel->updateCorrectCount($question_id, 1);
-    
-                        // Mendapatkan skor untuk pertanyaan
-                        $score_earned = $this->scoreModel->getQuestionScore($question_id);
-                        $total_score += $score_earned; // Mengakumulasi total skor
+                        $this->scoreModel->updateCorrectCount($question_id, $student_id);
+                    } else {
+                        // Memperbarui jumlah jawaban salah di tabel skor
+                        $this->scoreModel->updateWrongCount($question_id, $student_id);
                     }
+
+                    // Mendapatkan skor untuk pertanyaan
+                    $score_earned = $this->scoreModel->getQuestionScore($question_id);
+                    $total_score += $score_earned; // Mengakumulasi total skor
                 }
             }
-    
+
             // Memperbarui total skor siswa berdasarkan total skor yang diperoleh
             $this->scoreModel->updateStudentScore($student_id, $total_score);
-    
+
             // Mengarahkan ke dashboard setelah pemrosesan
             header('Location: ' . $_ENV['BASE_URL'] . '/dashboard');
             exit;

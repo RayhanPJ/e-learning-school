@@ -60,7 +60,7 @@ class StudentDataModel {
                 r.phone,
                 r.major_id,
                 m.name AS major_name,
-                m.price AS major_price,  // Mengambil harga dari tabel major
+                m.price AS major_price,
                 r.status_payment,
                 sd.rollno,
                 sd.registers_id
@@ -69,10 +69,10 @@ class StudentDataModel {
             JOIN 
                 registers r ON sd.registers_id = r.id
             JOIN 
-                major m ON sd.major_id = m.id  // Join untuk mendapatkan detail jurusan
+                major m ON sd.major_id = m.id
             WHERE 
                 sd.major_id = :major_id
-                AND r.status_payment = 1  // Filter untuk siswa dengan status pembayaran yang sudah dibayar
+                AND r.status_payment = 1 
         ";
         
         $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
