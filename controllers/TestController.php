@@ -53,7 +53,7 @@ class TestController extends BaseController
     public function report()
     {
         $this->checkUserLogin(); // Memastikan pengguna sudah login
-        $tests = $this->testModel->getAllTestsWithStatus(); // Mengambil semua ujian dengan status
+        $tests = $this->testModel->getAllTestsWithStudentStatus(); // Mengambil semua data ujian
 
         // Inisialisasi model perhitungan skor
         $this->scoreCalculationModel = new ScoreCalculationModel();
