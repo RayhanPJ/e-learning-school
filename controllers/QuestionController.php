@@ -211,7 +211,7 @@ class QuestionController extends BaseController
                     // Memeriksa apakah opsi yang dipilih benar
                     if ($question['correctAns'] == $selected_option) {
                         // Memperbarui jumlah jawaban benar di tabel skor
-                        $this->scoreModel->updateCorrectCount($question_id);
+                        $this->scoreModel->updateCorrectCount($question_id, 1);
     
                         // Mendapatkan skor untuk pertanyaan
                         $score_earned = $this->scoreModel->getQuestionScore($question_id);

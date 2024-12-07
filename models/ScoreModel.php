@@ -18,9 +18,10 @@ class ScoreModel {
     }
 
     // Method untuk memperbarui jumlah jawaban benar untuk pertanyaan
-    public function updateCorrectCount($question_id) {
-        $sql = "UPDATE score SET correct_count = correct_count + 1 WHERE question_id = :question_id";
+    public function updateCorrectCount($question_id, $correct_count) {
+        $sql = "UPDATE score SET correct_count = :correct_count WHERE question_id = :question_id";
         $stmt = $this->db->prepare($sql); // Menyiapkan pernyataan
+        $stmt->bindValue(':correct_count', $correct_count); // Mengikat nilai correct_count
         $stmt->bindValue(':question_id', $question_id); // Mengikat nilai question_id
         return $stmt->execute(); // Mengembalikan true jika berhasil
     }
