@@ -7,50 +7,50 @@ class StudentDataModel {
     private $registersModel;
 
     public function __construct() {
-        $this->db = (new Database())->connect();
-        $this->registersModel = new RegistersModel();
+        $this->db = (new Database())->connect(); // Menghubungkan ke database
+        $this->registersModel = new RegistersModel(); // Menginisialisasi model Registers
     }
 
-    // Fetch all student data
+    // Method untuk mengambil semua data siswa
     public function getAllStudentData() {
-        $query = "SELECT * FROM student_data";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $query = "SELECT * FROM student_data"; // Mengambil semua data dari tabel 'student_data'
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->execute(); // Menjalankan kueri
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Mengembalikan semua data siswa sebagai array asosiatif
     }
 
-    // Insert multiple roll numbers for a class
+    // Method untuk memasukkan beberapa nomor urut untuk sebuah kelas
     public function createStudentData($registers_id, $major_id) {
-        // Get the count of registers with the same major_id
+        // Menghitung jumlah pendaftaran dengan major_id yang sama
         $countResult = $this->registersModel->countRegisterByMajorId($major_id);
         $rollno = 0;
 
-        // If countResult is not empty, get the count
+        // Jika countResult tidak kosong, ambil jumlahnya
         if ($countResult) {
-            $rollno = $countResult + 1; // Increment by 1 for the new entry
+            $rollno = $countResult + 1; // Increment 1 untuk entri baru
         } else {
-            $rollno = 1; // If no registers exist, start with roll number 1
+            $rollno = 1; // Jika tidak ada pendaftaran, mulai dengan nomor urut 1
         }
 
-        // Insert the new student data
+        // Memasukkan data siswa baru
         $queryInsert = "INSERT INTO student_data (registers_id, rollno, major_id) VALUES (:registers_id, :rollno, :major_id)";
-        $stmtInsert = $this->db->prepare($queryInsert);
-        $stmtInsert->bindValue(':registers_id', $registers_id);
-        $stmtInsert->bindValue(':rollno', $rollno);
-        $stmtInsert->bindValue(':major_id', $major_id);
-        return $stmtInsert->execute();
-
+        $stmtInsert = $this->db->prepare($queryInsert); // Menyiapkan pernyataan
+        $stmtInsert->bindValue(':registers_id', $registers_id); // Mengikat nilai registers_id
+        $stmtInsert->bindValue(':rollno', $rollno); // Mengikat nilai rollno
+        $stmtInsert->bindValue(':major_id', $major_id); // Mengikat nilai major_id
+        return $stmtInsert->execute(); // Mengembalikan true jika berhasil
     }
     
-    // Fetch student data by ID
+    // Method untuk mengambil data siswa berdasarkan ID
     public function getStudentDataById($id) {
-        $query = "SELECT * FROM student_data WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $query = "SELECT * FROM student_data WHERE id = :id"; // Kuery untuk mengambil data siswa berdasarkan ID
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT); // Mengikat nilai ID
+        $stmt->execute(); // Menjalankan kueri
+        return $stmt->fetch(PDO::FETCH_ASSOC); // Mengembalikan data siswa sebagai array asosiatif
     }
 
+    // Method untuk mengambil siswa berdasarkan ID jurusan
     public function getStudentsByMajorId($major_id) {
         $query = "
             SELECT 
@@ -60,7 +60,7 @@ class StudentDataModel {
                 r.phone,
                 r.major_id,
                 m.name AS major_name,
-                m.price AS major_price,  -- Assuming 'price' is a column in the 'major' table
+                m.price AS major_price,  // Mengambil harga dari tabel major
                 r.status_payment,
                 sd.rollno,
                 sd.registers_id
@@ -69,36 +69,35 @@ class StudentDataModel {
             JOIN 
                 registers r ON sd.registers_id = r.id
             JOIN 
-                major m ON sd.major_id = m.id  -- Join to get major details
+                major m ON sd.major_id = m.id  // Join untuk mendapatkan detail jurusan
             WHERE 
                 sd.major_id = :major_id
-                AND r.status_payment = 1  -- Filter for students with paid status
+                AND r.status_payment = 1  // Filter untuk siswa dengan status pembayaran yang sudah dibayar
         ";
         
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':major_id', $major_id, PDO::PARAM_INT);  // Corrected the parameter binding
-        $stmt->execute();
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':major_id', $major_id, PDO::PARAM_INT); // Mengikat nilai major_id
+        $stmt->execute(); // Menjalankan kueri
         
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Mengembalikan semua siswa untuk jurusan tertentu
     }
-      
 
-    // Update student data
+    // Method untuk memperbarui data siswa
     public function updateStudentData($id, $rollno, $class_id) {
-        $query = "UPDATE student_data SET rollno = :rollno, class_id = :class_id WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':rollno', $rollno, PDO::PARAM_INT);
-        $stmt->bindValue(':class_id', $class_id, PDO::PARAM_INT);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        $query = "UPDATE student_data SET rollno = :rollno, class_id = :class_id WHERE id = :id"; // Kuery untuk memperbarui data siswa
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':rollno', $rollno, PDO::PARAM_INT); // Mengikat nilai rollno
+        $stmt->bindValue(':class_id', $class_id, PDO::PARAM_INT); // Mengikat nilai class_id
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT); // Mengikat nilai ID
+        return $stmt->execute(); // Mengembalikan true jika berhasil
     }
 
-    // Delete student data by ID
+    // Method untuk menghapus data siswa berdasarkan ID
     public function deleteStudentData($id) {
-        $query = "DELETE FROM student_data WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-        return $stmt->execute();
+        $query = "DELETE FROM student_data WHERE id = :id"; // Kuery untuk menghapus data siswa berdasarkan ID
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT); // Mengikat nilai ID
+        return $stmt->execute(); // Mengembalikan true jika berhasil
     }
 }
 ?>

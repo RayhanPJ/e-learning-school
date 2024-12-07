@@ -9,38 +9,38 @@
                 <div class="card m-b-30">
                     <div class="card-body">
 
-                        <h2 class="mt-0 header-title">Questions for Test ID: <?= htmlspecialchars($test_id) ?></h2>
+                        <h2 class="mt-0 header-title">Questions for Test ID: <?= $test_id ?></h2>
 
                         <form method="POST" action="<?= $_ENV['BASE_URL']; ?>/submit-answers">
                             <?php foreach ($questions as $index => $question): ?>
                                 <div id="content">
                                     <div class="modal-header">
                                         <h5>
-                                            <span class="label label-warning" id="qid"><?= $index + 1 ?></span>
-                                            <span id="question"><?= htmlspecialchars($question['title']) ?></span>
+                                            <span class="label label-warning" id="qid"><?= $index + 1 ?>. </span>
+                                            <span id="question"><?= $question['title'] ?></span>
                                         </h5>
                                     </div>
                                     <div class="modal-body">
                                         <div class="quiz" id="quiz" data-toggle="buttons">
                                             <label id="optionA" class="element-animation1 btn btn-lg btn-primary btn-block">
                                                 <span class="btn-label"><i class="glyphicon glyphicon-chevron-right"></i></span>
-                                                <input type="radio" name="q_answer[<?= $question['id'] ?>]" value="1" required>
-                                                <?= htmlspecialchars($question['optionA']) ?>
+                                                <input type="radio" name="q_answer[<?= $question['id'] ?>]" value="A" required>
+                                                <?= $question['optionA'] ?>
                                             </label>
                                             <label id="optionB" class="element-animation2 btn btn-lg btn-primary btn-block">
                                                 <span class="btn-label"><i class="glyphicon glyphicon-chevron-right"></i></span>
-                                                <input type="radio" name="q_answer[<?= $question['id'] ?>]" value="2" required>
-                                                <?= htmlspecialchars($question['optionB']) ?>
+                                                <input type="radio" name="q_answer[<?= $question['id'] ?>]" value="B" required>
+                                                <?= $question['optionB'] ?>
                                             </label>
                                             <label id="optionC" class="element-animation3 btn btn-lg btn-primary btn-block">
                                                 <span class="btn-label"><i class="glyphicon glyphicon-chevron-right"></i></span>
-                                                <input type="radio" name="q_answer[<?= $question['id'] ?>]" value="3" required>
-                                                <?= htmlspecialchars($question['optionC']) ?>
+                                                <input type="radio" name="q_answer[<?= $question['id'] ?>]" value="C" required>
+                                                <?= $question['optionC'] ?>
                                             </label>
                                             <label id="optionD" class="element-animation4 btn btn-lg btn-primary btn-block">
                                                 <span class="btn-label"><i class="glyphicon glyphicon-chevron-right"></i></span>
-                                                <input type="radio" name="q_answer[<?= $question['id'] ?>]" value="4" required>
-                                                <?= htmlspecialchars($question['optionD']) ?>
+                                                <input type="radio" name="q_answer[<?= $question['id'] ?>]" value="D" required>
+                                                <?= $question['optionD'] ?>
                                             </label>
                                         </div>
                                     </div>

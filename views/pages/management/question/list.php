@@ -38,13 +38,13 @@
                                 <?php $i = 1; foreach ($questions as $question): ?>
                                     <tr>
                                         <td><?= $i++ ?></td>
-                                        <td><?= htmlspecialchars($question['title']) ?></td>
-                                        <td><?= htmlspecialchars($question['optionA']) ?></td>
-                                        <td><?= htmlspecialchars($question['optionB']) ?></td>
-                                        <td><?= htmlspecialchars($question['optionC']) ?></td>
-                                        <td><?= htmlspecialchars($question['optionD']) ?></td>
-                                        <td><?= htmlspecialchars($question['correctAns']) ?></td>
-                                        <td><?= htmlspecialchars($question['score']) ?></td>
+                                        <td><?= $question['title'] ?></td>
+                                        <td><?= $question['optionA'] ?></td>
+                                        <td><?= $question['optionB'] ?></td>
+                                        <td><?= $question['optionC'] ?></td>
+                                        <td><?= $question['optionD'] ?></td>
+                                        <td><?= $question['correctAns'] ?></td>
+                                        <td><?= $question['score'] ?></td>
                                         <td>
                                             <div class="d-flex justify-content-between">
                                                 <a class="btn btn-sm btn-primary w-100" style="margin-right: 12px;" href="<?= $_ENV['BASE_URL']; ?>/questions-edit/<?= $question['id'] ?>">Edit</a>

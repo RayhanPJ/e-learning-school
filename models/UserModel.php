@@ -7,7 +7,7 @@ class UserModel
 
     public function __construct()
     {
-        // Membuat koneksi database menggunakan Database class
+        // Membuat koneksi database menggunakan kelas Database
         $this->db = (new Database())->connect();
     }
 
@@ -18,10 +18,10 @@ class UserModel
      */
     public function getAllUsers()
     {
-        $query = "SELECT * FROM teachers";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $query = "SELECT * FROM teachers"; // Mengambil semua data dari tabel 'teachers'
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->execute(); // Menjalankan kueri
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Mengembalikan semua pengguna sebagai array asosiatif
     }
 
     /**
@@ -34,12 +34,13 @@ class UserModel
      */
     public function createUser($username, $password, $email, string $role = 'admin')
     {
-        $query = "INSERT INTO teachers (username, password, email, role) VALUES (:username, :password, :email, :role)";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':username', $username);
-        $stmt->bindValue(':password', $password);
-        $stmt->bindValue(':role', $role);
-        return $stmt->execute();
+        $query = "INSERT INTO teachers (username, password, email, role) VALUES (:username, :password, :email, :role)"; // Kuery untuk menyimpan pengguna baru
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':username', $username); // Mengikat nilai username
+        $stmt->bindValue(':password', $password); // Mengikat nilai password
+        $stmt->bindValue(':email', $email); // Mengikat nilai email
+        $stmt->bindValue(':role', $role); // Mengikat nilai role
+        return $stmt->execute(); // Mengembalikan true jika berhasil
     }
 
     /**
@@ -50,11 +51,11 @@ class UserModel
      */
     public function getUserById($id)
     {
-        $query = "SELECT * FROM teachers WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $id);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $query = "SELECT * FROM teachers WHERE id = :id"; // Kuery untuk mengambil pengguna berdasarkan ID
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':id', $id); // Mengikat nilai ID
+        $stmt->execute(); // Menjalankan kueri
+        return $stmt->fetch(PDO::FETCH_ASSOC); // Mengembalikan pengguna sebagai array asosiatif
     }
 
     /**
@@ -67,13 +68,14 @@ class UserModel
      */
     public function updateUser($id, $username, $email, $password, string $role = 'admin')
     {
-        $query = "UPDATE teachers SET username = :username, email = :email, password = :password, role = :role WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':username', $username);
-        $stmt->bindValue(':password', $password);
-        $stmt->bindValue(':role', $role);
-        $stmt->bindValue(':id', $id);
-        return $stmt->execute();
+        $query = "UPDATE teachers SET username = :username, email = :email, password = :password, role = :role WHERE id = :id"; // Kuery untuk memperbarui data pengguna
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':username', $username); // Mengikat nilai username
+        $stmt->bindValue(':email', $email); // Mengikat nilai email
+        $stmt->bindValue(':password', $password); // Mengikat nilai password
+        $stmt->bindValue(':role', $role); // Mengikat nilai role
+        $stmt->bindValue(':id', $id); // Mengikat nilai ID
+        return $stmt->execute(); // Mengembalikan true jika berhasil
     }
 
     /**
@@ -84,12 +86,17 @@ class UserModel
      */
     public function deleteUser($id)
     {
-        $query = "DELETE FROM teachers WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $id);
-        return $stmt->execute();
+        $query = "DELETE FROM teachers WHERE id = :id"; // Kuery untuk menghapus pengguna berdasarkan ID
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':id', $id); // Mengikat nilai ID
+        return $stmt->execute(); // Mengembalikan true jika berhasil
     }
 
+    /**
+     * Mengambil semua pengguna dengan detail tambahan.
+     *
+     * @return array
+     */
     public function getAllUsersWithDetails()
     {
         $query = "
@@ -106,10 +113,11 @@ class UserModel
             LEFT JOIN pembayaran p ON u.id = p.id_user
             LEFT JOIN jurusan j ON p.id_jurusan = j.id
             LEFT JOIN tokens t ON u.id = t.id_user
-        ";
+        "; // Kuery untuk mengambil semua pengguna dengan detail tambahan
 
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->execute(); // Menjalankan kueri
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Mengembalikan semua hasil sebagai array asosiatif
     }
 }
+?>

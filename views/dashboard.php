@@ -19,10 +19,10 @@
                 </div>  
             </div>
             <div class="card-body">
-                <?php if (!empty($tests) && count($tests) > 0): ?>
-                    <?php foreach ($tests as $test): ?>
-                        <div class="card" style="background:#ededed; cursor: pointer;" 
-                        onclick="window.location.href='<?= ($_SESSION['role'] === 'student') ? $_ENV['BASE_URL'] . '/questions-show/' . $test['id'] : $_ENV['BASE_URL'] . '/tests-detail/' . $test['id']; ?>'">
+                <?php if (!empty($preparedTests)): ?>
+                    <?php foreach ($preparedTests as $test): ?>
+                        <div class="card" style="background:#ededed; cursor: <?= $test['clickable'] ? 'pointer' : 'not-allowed'; ?>;" 
+                            onclick="<?= $test['clickable'] ? "window.location.href='" . $test['url'] . "'" : ''; ?>">
                             <div class="card-body">
                                 <h6><?= $test["name"]; ?></h6>
                                 <div class="row">
@@ -31,6 +31,17 @@
                                     </div>
                                     <div class="col-md-4"> 
                                         <p style="text-align:right;">Date - <?= $test["date"]; ?></p>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <span class="badge <?= $test['badgeColor']; ?>"><?= $test['badgeText']; ?></span>
+                                        <span class="badge <?= $test['studentBadgeColor']; ?>"><?= $test['studentBadgeText']; ?></span>
+                                        <?php if ($test['studentStatus'] === 1): ?>
+                                            <p style="text-align:right;">Score: <?= $test['studentScore']; ?></p>
+                                            <p style="text-align:right;">Average Score: <?= number_format($test['averageScore'], 2); ?></p>
+                                            <p style="text-align:right;">Grade: <?= $test['grade']; ?></p>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>

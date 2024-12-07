@@ -158,6 +158,11 @@ switch (true) {
         $testController->index();
         break;
 
+        // Rute untuk menampilkan table test report
+    case $requestUri === '/tests-report' && $requestSrv === 'GET':
+        $testController->report();
+        break;
+
     // Rute untuk menampilkan form edit registrasi
     case preg_match('/^\/tests-edit\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
         $testController->edit($matches[1]);
@@ -210,7 +215,7 @@ switch (true) {
 
     // Rute untuk menyimpan questions baru
     case $requestUri === '/submit-answers' && $requestSrv === 'POST':
-        $questionsController->store();
+        $questionsController->submitAnswers();
         break;
 
     // Rute untuk menghapus questions

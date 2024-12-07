@@ -7,8 +7,8 @@ class AuthModel
 
     public function __construct()
     {
-        // Membuat koneksi database menggunakan Database class
-        $this->db = (new Database())->connect();
+        // Membuat koneksi database menggunakan kelas Database
+        $this->db = (new Database())->connect(); // Menghubungkan ke database
     }
 
     /**
@@ -18,27 +18,27 @@ class AuthModel
      * @param string $password
      * @return array|null
      */
-public function login($username, $password)
-{
-    // Check in the teachers table
-    $query = "SELECT * FROM teachers WHERE username = :username AND password = :password";
-    $stmt = $this->db->prepare($query);
-    $stmt->bindValue(':username', $username);
-    $stmt->bindValue(':password', $password); // Password stored in plaintext
-    $stmt->execute();
-    $user = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch user from teachers
+    public function login($username, $password)
+    {
+        // Memeriksa di tabel teachers
+        $query = "SELECT * FROM teachers WHERE username = :username AND password = :password";
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':username', $username); // Mengikat nilai username
+        $stmt->bindValue(':password', $password); // Mengikat nilai password (disimpan dalam plaintext)
+        $stmt->execute(); // Menjalankan kueri
+        $user = $stmt->fetch(PDO::FETCH_ASSOC); // Mengambil pengguna dari tabel teachers
 
-    // If not found in teachers, check in the students table
-    if (!$user) {
-        $query = "SELECT * FROM students WHERE username = :username AND password = :password";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':username', $username);
-        $stmt->bindValue(':password', $password); // Password stored in plaintext
-        $stmt->execute();
-        $user = $stmt->fetch(PDO::FETCH_ASSOC); // Fetch user from students
+        // Jika tidak ditemukan di tabel teachers, periksa di tabel students
+        if (!$user) {
+            $query = "SELECT * FROM students WHERE username = :username AND password = :password";
+            $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+            $stmt->bindValue(':username', $username); // Mengikat nilai username
+            $stmt->bindValue(':password', $password); // Mengikat nilai password (disimpan dalam plaintext)
+            $stmt->execute(); // Menjalankan kueri
+            $user = $stmt->fetch(PDO::FETCH_ASSOC); // Mengambil pengguna dari tabel students
+        }
+
+        return $user; // Mengembalikan pengguna atau null jika tidak ditemukan di kedua tabel
     }
-
-    return $user; // Return user or null if not found in both tables
 }
-
-}
+?>

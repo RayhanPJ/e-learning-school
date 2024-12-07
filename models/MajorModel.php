@@ -5,54 +5,54 @@ class MajorModel {
     private $db;
 
     public function __construct() {
-        $this->db = (new Database())->connect();
+        $this->db = (new Database())->connect(); // Menghubungkan ke database
     }
 
-    // Method to get all majors
+    // Method untuk mendapatkan semua jurusan
     public function getAllMajors() {
-        $query = "SELECT * FROM major";
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $query = "SELECT * FROM major"; // Kuery untuk mengambil semua jurusan
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->execute(); // Menjalankan kueri
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Mengembalikan semua jurusan sebagai array asosiatif
     }
 
-    // Method to get a major by ID
+    // Method untuk mendapatkan jurusan berdasarkan ID
     public function getMajorById($id) {
-        $query = "SELECT * FROM major WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $id);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $query = "SELECT * FROM major WHERE id = :id"; // Kuery untuk mengambil jurusan berdasarkan ID
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':id', $id); // Mengikat nilai ID
+        $stmt->execute(); // Menjalankan kueri
+        return $stmt->fetch(PDO::FETCH_ASSOC); // Mengembalikan jurusan sebagai array asosiatif
     }
 
-    // Method to create a new major
+    // Method untuk membuat jurusan baru
     public function createMajor($name, $price) {
-        $query = "INSERT INTO major (name, price) VALUES (:name, :price)";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':name', $name);
-        $stmt->bindValue(':price', $price);
-        $stmt->execute();
+        $query = "INSERT INTO major (name, price) VALUES (:name, :price)"; // Kuery untuk menyimpan jurusan baru
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':name', $name); // Mengikat nilai nama
+        $stmt->bindValue(':price', $price); // Mengikat nilai harga
+        $stmt->execute(); // Menjalankan kueri
 
-        // Return the newly created major
-        return $this->getMajorById($this->db->lastInsertId());
+        // Mengembalikan jurusan yang baru dibuat
+        return $this->getMajorById($this->db->lastInsertId()); // Mengambil jurusan berdasarkan ID terakhir yang dimasukkan
     }
 
-    // Method to update a major
+    // Method untuk memperbarui jurusan
     public function updateMajor($id, $name, $price) {
-        $query = "UPDATE major SET name = :name, price = :price WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':name', $name);
-        $stmt->bindValue(':price', $price);
-        $stmt->bindValue(':id', $id);
-        return $stmt->execute();
+        $query = "UPDATE major SET name = :name, price = :price WHERE id = :id"; // Kuery untuk memperbarui jurusan
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':name', $name); // Mengikat nilai nama
+        $stmt->bindValue(':price', $price); // Mengikat nilai harga
+        $stmt->bindValue(':id', $id); // Mengikat nilai ID
+        return $stmt->execute(); // Mengembalikan true jika berhasil
     }
 
-    // Method to delete a major
+    // Method untuk menghapus jurusan
     public function deleteMajor($id) {
-        $query = "DELETE FROM major WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $id);
-        return $stmt->execute();
+        $query = "DELETE FROM major WHERE id = :id"; // Kuery untuk menghapus jurusan berdasarkan ID
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':id', $id); // Mengikat nilai ID
+        return $stmt->execute(); // Mengembalikan true jika berhasil
     }
 }
 ?>

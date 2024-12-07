@@ -21,6 +21,10 @@
                     <!-- <a href=""><i class="mdi mdi"></i></a> -->
                 </li>
 
+                <li class="has-submenu">
+                    <a href="<?= $_ENV['BASE_URL']; ?>/tests-report"><i class="mdi mdi-book"></i>Report</a>
+                </li>
+
             </ul>
             <!-- End navigation menu -->
         </div> <!-- end #navigation -->

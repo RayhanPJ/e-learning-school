@@ -1,95 +1,95 @@
 <?php
 require_once __DIR__ . '/../models/QuestionModel.php';
-require_once __DIR__ . '/../models/QuestionTestMappingModel.php'; // Include the mapping model
-require_once __DIR__ . '/../models/ScoreModel.php'; // Include the score model
+require_once __DIR__ . '/../models/QuestionTestMappingModel.php'; // Sertakan model pemetaan
+require_once __DIR__ . '/../models/ScoreModel.php'; // Sertakan model skor
 require_once __DIR__ . '/../controllers/BaseController.php';
-require_once __DIR__ . '/../vendor/autoload.php'; // Location of vendor autoloader
+require_once __DIR__ . '/../vendor/autoload.php'; // Lokasi autoloader vendor
 
 use Dotenv\Dotenv;
 
 class QuestionController extends BaseController
 {
     private $questionModel;
-    private $questionTestMappingModel; // Add the mapping model
-    private $scoreModel; // Add the score model
+    private $questionTestMappingModel; // Tambahkan model pemetaan
+    private $scoreModel; // Tambahkan model skor
 
     public function __construct()
     {
-        parent::__construct(); // Call the BaseController constructor
-        $this->questionModel = new QuestionModel();
-        $this->questionTestMappingModel = new QuestionTestMappingModel(); // Initialize the mapping model
-        $this->scoreModel = new ScoreModel(); // Initialize the score model
+        parent::__construct(); // Memanggil konstruktor BaseController
+        $this->questionModel = new QuestionModel(); // Menginisialisasi model Question
+        $this->questionTestMappingModel = new QuestionTestMappingModel(); // Menginisialisasi model pemetaan
+        $this->scoreModel = new ScoreModel(); // Menginisialisasi model Score
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
-        $dotenv->load();
+        $dotenv->load(); // Memuat variabel lingkungan
     }
 
     /**
-     * Display all questions.
+     * Menampilkan semua pertanyaan.
      */
     public function index()
     {
-        $this->authorize('admin'); // Ensure the user is authorized
-        $questions = $this->questionModel->getAllQuestions(); // Fetch all questions
+        $this->authorize('admin'); // Memastikan pengguna memiliki otorisasi
+        $questions = $this->questionModel->getAllQuestions(); // Mengambil semua pertanyaan
 
-        require_once __DIR__ . '/../views/pages/management/question/list.php'; // Load the list view
+        require_once __DIR__ . '/../views/pages/management/question/list.php'; // Memuat tampilan daftar pertanyaan
 
-        return $questions;
+        return $questions; // Mengembalikan daftar pertanyaan
     }
 
     /**
-     * Show the page to create a new question.
+     * Menampilkan halaman untuk membuat pertanyaan baru.
      */
     public function create($id)
     {
-        $this->authorize('admin'); // Ensure the user is authorized
-        $tests_id = $id;
-        // var_dump($tests_id);die;
-        require_once __DIR__ . '/../views/pages/management/question/add.php'; // Load the add question view
+        $this->authorize('admin'); // Memastikan pengguna memiliki otorisasi
+        $tests_id = $id; // Menyimpan ID ujian
 
-        return $tests_id;
+        require_once __DIR__ . '/../views/pages/management/question/add.php'; // Memuat tampilan untuk menambah pertanyaan
+
+        return $tests_id; // Mengembalikan ID ujian
     }
 
     /**
-     * Show the page to edit an existing question.
+     * Menampilkan halaman untuk mengedit pertanyaan yang ada.
      */
     public function edit($id)
     {
-        $this->authorize('admin'); // Ensure the user is authorized
-        $question = $this->questionModel->getQuestionById($id); // Fetch the question by ID
+        $this->authorize('admin'); // Memastikan pengguna memiliki otorisasi
+        $question = $this->questionModel->getQuestionById($id); // Mengambil pertanyaan berdasarkan ID
         
         if (!$question) {
-            $_SESSION['flash'] = 'Question not found.'; // Set flash message if question not found
-            header('Location: ' . $_ENV['BASE_URL'] . '/questions'); // Redirect to questions list
+            $_SESSION['flash'] = 'Pertanyaan tidak ditemukan.'; // Mengatur pesan flash jika pertanyaan tidak ditemukan
+            header('Location: ' . $_ENV['BASE_URL'] . '/questions'); // Mengarahkan ke daftar pertanyaan
             exit;
         }
 
-        require_once __DIR__ . '/../views/pages/management/question/edit.php'; // Load the edit question view
+        require_once __DIR__ . '/../views/pages/management/question/edit.php'; // Memuat tampilan untuk mengedit pertanyaan
 
-        return $questions;
+        return $questions; // Mengembalikan pertanyaan
     }
 
     /**
-     * Store a new question in the database.
+     * Menyimpan pertanyaan baru ke dalam database.
      */
     public function store()
     {
-        $this->authorize('admin'); // Ensure the user is authorized
+        $this->authorize('admin'); // Memastikan pengguna memiliki otorisasi
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->handleStore(); // Handle the store operation
+            $this->handleStore(); // Menangani operasi penyimpanan
         }
     }
 
     private function handleStore()
     {
-        $errors = $this->validateQuestionInputs($_POST); // Validate inputs
+        $errors = $this->validateQuestionInputs($_POST); // Memvalidasi input
 
-        // If there are errors, return to view with errors
+        // Jika ada kesalahan, kembali ke tampilan dengan kesalahan
         if (!empty($errors)) {
             $this->handleValidationErrors($errors, $_POST, '/questions-create');
         }
 
-        // Save question to database
+        // Menyimpan pertanyaan ke dalam database
         $question = $this->questionModel->createQuestion(
             trim($_POST['title']),
             trim($_POST['optionA']),
@@ -100,45 +100,44 @@ class QuestionController extends BaseController
             trim($_POST['score'])
         );
 
-        // var_dump($question['id'], $_POST['tests_id']);die;
         if ($question) {
-            $question_id = $question['id']; // Get the last inserted question ID
+            $question_id = $question['id']; // Mendapatkan ID pertanyaan yang baru dimasukkan
 
-            $this->questionTestMappingModel->createMapping($question_id, trim($_POST['tests_id'])); // Create mapping
-            $this->scoreModel->createScore(trim($_POST['tests_id']), $question_id); // Create score entry
+            $this->questionTestMappingModel->createMapping($question_id, trim($_POST['tests_id'])); // Membuat pemetaan
+            $this->scoreModel->createScore(trim($_POST['tests_id']), $question_id); // Membuat entri skor
 
-            $_SESSION['flash'] = 'Question successfully created.'; // Set success message
-            header('Location: ' . $_ENV['BASE_URL'] . '/tests-detail/' . $_POST['tests_id']); // Redirect to questions list
+            $_SESSION['flash'] = 'Pertanyaan berhasil dibuat.'; // Mengatur pesan sukses
+            header('Location: ' . $_ENV['BASE_URL'] . '/tests-detail/' . $_POST['tests_id']); // Mengarahkan ke detail ujian
             exit;
         } else {
-            $_SESSION['flash'] = 'Failed to create question.'; // Set failure message
-            header('Location: ' . $_ENV['BASE_URL'] . '/questions-create'); // Redirect back to create form
+            $_SESSION['flash'] = 'Gagal membuat pertanyaan.'; // Mengatur pesan gagal
+            header('Location: ' . $_ENV['BASE_URL'] . '/questions-create'); // Mengarahkan kembali ke formulir pembuatan
             exit;
         }
     }
 
     /**
-     * Update an existing question.
+     * Memperbarui pertanyaan yang ada.
      */
     public function update($id)
     {
-        $this->authorize('admin'); // Ensure the user is authorized
+        $this->authorize('admin'); // Memastikan pengguna memiliki otorisasi
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->handleUpdate($id); // Handle the update operation
+            $this->handleUpdate($id); // Menangani operasi pembaruan
         }
     }
 
     private function handleUpdate($id)
     {
-        $errors = $this->validateQuestionInputs($_POST); // Validate inputs
+        $errors = $this->validateQuestionInputs($_POST); // Memvalidasi input
 
-        // If there are errors, return to view with errors
+        // Jika ada kesalahan, kembali ke tampilan dengan kesalahan
         if (!empty($errors)) {
             $this->handleValidationErrors($errors, $_POST, '/questions-edit/' . $id);
         }
 
-        // Update question in database
+        // Memperbarui pertanyaan di database
         $updated = $this->questionModel->updateQuestion(
             $id,
             trim($_POST['title']),
@@ -151,117 +150,123 @@ class QuestionController extends BaseController
         );
 
         if ($updated) {
-            $_SESSION['flash'] = 'Question successfully updated.'; // Set success message
-            header('Location: ' . $_ENV['BASE_URL'] . '/questions'); // Redirect to questions list
+            $_SESSION['flash'] = 'Pertanyaan berhasil diperbarui.'; // Mengatur pesan sukses
+            header('Location: ' . $_ENV['BASE_URL'] . '/questions'); // Mengarahkan ke daftar pertanyaan
             exit;
         } else {
-            $_SESSION['flash'] = 'Failed to update question.'; // Set failure message
-            header('Location: ' . $_ENV['BASE_URL'] . '/questions-edit/' . $id); // Redirect back to edit form
+            $_SESSION['flash'] = 'Gagal memperbarui pertanyaan.'; // Mengatur pesan gagal
+            header('Location: ' . $_ENV['BASE_URL'] . '/questions-edit/' . $id); // Mengarahkan kembali ke formulir edit
             exit;
         }
     }
 
     /**
-     * Delete a question from the database.
+     * Menghapus pertanyaan dari database.
      */
     public function delete($id)
     {
-        $this->authorize('admin'); // Ensure the user is authorized
+        $this->authorize('admin'); // Memastikan pengguna memiliki otorisasi
 
         if ($this->questionModel->deleteQuestion($id)) {
-            $this->questionTestMappingModel->deleteMapping($id, null); // Optionally delete mappings
-            $_SESSION['flash'] = 'Question successfully deleted.'; // Set success message
-            header('Location: ' . $_ENV['BASE_URL'] . '/questions'); // Redirect to questions list
+            $this->questionTestMappingModel->deleteMapping($id, null); // Opsional menghapus pemetaan
+            $_SESSION['flash'] = 'Pertanyaan berhasil dihapus.'; // Mengatur pesan sukses
+            header('Location: ' . $_ENV['BASE_URL'] . '/questions'); // Mengarahkan ke daftar pertanyaan
             exit;
         } else {
-            die('Failed to delete question.'); // Handle failure
+            die('Gagal menghapus pertanyaan.'); // Menangani kegagalan
         }
     }
 
+    /**
+     * Menampilkan pertanyaan untuk ujian tertentu.
+     */
     public function showQuestions($test_id)
     {
-        $this->authorize('student'); // Ensure the user is authorized
+        $this->authorize('student'); // Memastikan pengguna memiliki otorisasi
 
-        // Fetch questions for the specified test
+        // Mengambil pertanyaan untuk ujian yang ditentukan
         $questions = $this->questionTestMappingModel->getQuestionsByTestId($test_id);
 
-        // Load the view to display questions
+        // Memuat tampilan untuk menampilkan pertanyaan
         require_once __DIR__ . '/../views/pages/management/question/show.php';
 
-        return $questions;
+        return $questions; // Mengembalikan daftar pertanyaan
     }
 
+    /**
+     * Menangani pengiriman jawaban ujian.
+     */
     public function submitAnswers()
     {
-        $this->authorize('student'); // Ensure the user is authorized as a student
-
+        $this->authorize('student'); // Memastikan pengguna memiliki otorisasi sebagai siswa
+    
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $student_id = $_SESSION['student_id']; // Assuming student ID is stored in session
-            $total_score = 0;
-
+            $student_id = $_SESSION['user_id']; // Mengambil ID siswa dari sesi
+            $total_score = 0; // Inisialisasi total skor
+    
             foreach ($_POST['q_answer'] as $question_id => $selected_option) {
-                // Fetch the correct answer and score for the question
+                // Mengambil jawaban yang benar untuk pertanyaan
                 $question = $this->questionModel->getQuestionById($question_id);
                 if ($question) {
-                    // Check if the selected option is correct
+                    // Memeriksa apakah opsi yang dipilih benar
                     if ($question['correctAns'] == $selected_option) {
-                        // Update correct count in the score table
+                        // Memperbarui jumlah jawaban benar di tabel skor
                         $this->scoreModel->updateCorrectCount($question_id);
-
-                        // Calculate score earned
-                        $score_earned = $question['score'];
-                        $total_score += $score_earned;
-
-                        // Update the student's total score
-                        $this->scoreModel->updateStudentScore($student_id, $score_earned);
+    
+                        // Mendapatkan skor untuk pertanyaan
+                        $score_earned = $this->scoreModel->getQuestionScore($question_id);
+                        $total_score += $score_earned; // Mengakumulasi total skor
                     }
                 }
             }
-
-            // Redirect to the dashboard after processing
+    
+            // Memperbarui total skor siswa berdasarkan total skor yang diperoleh
+            $this->scoreModel->updateStudentScore($student_id, $total_score);
+    
+            // Mengarahkan ke dashboard setelah pemrosesan
             header('Location: ' . $_ENV['BASE_URL'] . '/dashboard');
             exit;
         }
     }
 
     /**
-     * Validate question inputs.
+     * Memvalidasi input pertanyaan.
      */
     private function validateQuestionInputs($data)
     {
         $errors = [];
         if (empty(trim($data['title']))) {
-            $errors['title'] = 'Question title is required.';
+            $errors['title'] = 'Judul pertanyaan diperlukan.'; // Pesan kesalahan jika judul kosong
         }
         if (empty(trim($data['optionA']))) {
-            $errors['optionA'] = 'Option A is required.';
+            $errors['optionA'] = 'Opsi A diperlukan.'; // Pesan kesalahan jika opsi A kosong
         }
         if (empty(trim($data['optionB']))) {
-            $errors['optionB'] = 'Option B is required.';
+            $errors['optionB'] = 'Opsi B diperlukan.'; // Pesan kesalahan jika opsi B kosong
         }
         if (empty(trim($data['optionC']))) {
-            $errors['optionC'] = 'Option C is required.';
+            $errors['optionC'] = 'Opsi C diperlukan.'; // Pesan kesalahan jika opsi C kosong
         }
         if (empty(trim($data['optionD']))) {
-            $errors['optionD'] = 'Option D is required.';
+            $errors['optionD'] = 'Opsi D diperlukan.'; // Pesan kesalahan jika opsi D kosong
         }
         if (empty(trim($data['correctAns']))) {
-            $errors['correctAns'] = 'Correct answer is required.';
+            $errors['correctAns'] = 'Jawaban benar diperlukan.'; // Pesan kesalahan jika jawaban benar kosong
         }
         if (empty(trim($data['score']))) {
-            $errors['score'] = 'Score is required.';
+            $errors['score'] = 'Skor diperlukan.'; // Pesan kesalahan jika skor kosong
         }
-        return $errors;
+        return $errors; // Mengembalikan daftar kesalahan
     }
 
     /**
-     * Handle validation errors.
+     * Menangani kesalahan validasi.
      */
     private function handleValidationErrors($errors, $oldData, $redirectPath)
     {
-        $_SESSION['errors'] = $errors; // Store errors in session
-        $_SESSION['old'] = $oldData;    // Store old input data
-        header('Location: ' . $_ENV['BASE_URL'] . $redirectPath); // Redirect back to the form
+        $_SESSION['errors'] = $errors; // Menyimpan kesalahan di sesi
+        $_SESSION['old'] = $oldData;    // Menyimpan data input lama
+        header('Location: ' . $_ENV['BASE_URL'] . $redirectPath); // Mengarahkan kembali ke formulir
         exit;
     }
 }

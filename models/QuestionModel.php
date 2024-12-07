@@ -5,66 +5,66 @@ class QuestionModel {
     private $db;
 
     public function __construct() {
-        $this->db = (new Database())->connect();
+        $this->db = (new Database())->connect(); // Menghubungkan ke database
     }
 
-    // Retrieve all questions
+    // Method untuk mengambil semua pertanyaan
     public function getAllQuestions() {
-        $query = "SELECT * FROM questions"; // Assuming the table name is 'questions'
-        $stmt = $this->db->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $query = "SELECT * FROM questions"; // Mengambil semua data dari tabel 'questions'
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->execute(); // Menjalankan kueri
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Mengembalikan semua pertanyaan sebagai array asosiatif
     }
 
-    // Create a new question
+    // Method untuk membuat pertanyaan baru
     public function createQuestion($title, $optionA, $optionB, $optionC, $optionD, $correctAns, $score) {
         $query = "INSERT INTO questions (title, optionA, optionB, optionC, optionD, correctAns, score) 
-                  VALUES (:title, :optionA, :optionB, :optionC, :optionD, :correctAns, :score)";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':title', $title);
-        $stmt->bindValue(':optionA', $optionA);
-        $stmt->bindValue(':optionB', $optionB);
-        $stmt->bindValue(':optionC', $optionC);
-        $stmt->bindValue(':optionD', $optionD);
-        $stmt->bindValue(':correctAns', $correctAns);
-        $stmt->bindValue(':score', $score);
-        $stmt->execute();
+                  VALUES (:title, :optionA, :optionB, :optionC, :optionD, :correctAns, :score)"; // Kuery untuk menyimpan pertanyaan baru
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':title', $title); // Mengikat nilai judul
+        $stmt->bindValue(':optionA', $optionA); // Mengikat nilai opsi A
+        $stmt->bindValue(':optionB', $optionB); // Mengikat nilai opsi B
+        $stmt->bindValue(':optionC', $optionC); // Mengikat nilai opsi C
+        $stmt->bindValue(':optionD', $optionD); // Mengikat nilai opsi D
+        $stmt->bindValue(':correctAns', $correctAns); // Mengikat nilai jawaban benar
+        $stmt->bindValue(':score', $score); // Mengikat nilai skor
+        $stmt->execute(); // Menjalankan kueri
 
-        return $this->getQuestionById($this->db->lastInsertId());
+        return $this->getQuestionById($this->db->lastInsertId()); // Mengembalikan pertanyaan yang baru dibuat
     }
 
-    // Retrieve a question by ID
+    // Method untuk mengambil pertanyaan berdasarkan ID
     public function getQuestionById($id) {
-        $query = "SELECT * FROM questions WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $id);
-        $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $query = "SELECT * FROM questions WHERE id = :id"; // Kuery untuk mengambil pertanyaan berdasarkan ID
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':id', $id); // Mengikat nilai ID
+        $stmt->execute(); // Menjalankan kueri
+        return $stmt->fetch(PDO::FETCH_ASSOC); // Mengembalikan pertanyaan sebagai array asosiatif
     }
 
-    // Update a question
+    // Method untuk memperbarui pertanyaan
     public function updateQuestion($id, $title, $optionA, $optionB, $optionC, $optionD, $correctAns, $score) {
         $query = "UPDATE questions SET title = :title, optionA = :optionA, optionB = :optionB, 
                   optionC = :optionC, optionD = :optionD, correctAns = :correctAns, score = :score 
-                  WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':title', $title);
-        $stmt->bindValue(':optionA', $optionA);
-        $stmt->bindValue(':optionB', $optionB);
-        $stmt->bindValue(':optionC', $optionC);
-        $stmt->bindValue(':optionD', $optionD);
-        $stmt->bindValue(':correctAns', $correctAns);
-        $stmt->bindValue(':score', $score);
-        $stmt->bindValue(':id', $id);
-        return $stmt->execute();
+                  WHERE id = :id"; // Kuery untuk memperbarui pertanyaan
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':title', $title); // Mengikat nilai judul
+        $stmt->bindValue(':optionA', $optionA); // Mengikat nilai opsi A
+        $stmt->bindValue(':optionB', $optionB); // Mengikat nilai opsi B
+        $stmt->bindValue(':optionC', $optionC); // Mengikat nilai opsi C
+        $stmt->bindValue(':optionD', $optionD); // Mengikat nilai opsi D
+        $stmt->bindValue(':correctAns', $correctAns); // Mengikat nilai jawaban benar
+        $stmt->bindValue(':score', $score); // Mengikat nilai skor
+        $stmt->bindValue(':id', $id); // Mengikat nilai ID
+        return $stmt->execute(); // Mengembalikan true jika berhasil
     }
 
-    // Delete a question
+    // Method untuk menghapus pertanyaan
     public function deleteQuestion($id) {
-        $query = "DELETE FROM questions WHERE id = :id";
-        $stmt = $this->db->prepare($query);
-        $stmt->bindValue(':id', $id);
-        return $stmt->execute();
+        $query = "DELETE FROM questions WHERE id = :id"; // Kuery untuk menghapus pertanyaan berdasarkan ID
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':id', $id); // Mengikat nilai ID
+        return $stmt->execute(); // Mengembalikan true jika berhasil
     }
 }
 ?>
