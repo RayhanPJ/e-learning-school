@@ -1,0 +1,4 @@
+# disable upload file to repo
+composer.lock
+.env
+/vendor
