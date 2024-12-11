@@ -1,6 +1,12 @@
 <?php 
 require(__DIR__ . '/../../layouts/meta.php'); ?>
 <?php require(__DIR__ . '/../../layouts/header.php');?>
+<?php
+if (isset($_SESSION['errors'])) {
+    $errors = $_SESSION['errors'];
+    unset($_SESSION['errors']);
+}
+?>
 
 <div class="wrapper">
     <div class="container-fluid">
@@ -13,7 +19,7 @@ require(__DIR__ . '/../../layouts/meta.php'); ?>
 
                         <!-- Flash Message -->
                         <?php if (isset($_SESSION['flash'])): ?>
-                            <div class="alert alert-success" role="alert">
+                            <div class="alert <?= $_SESSION['class']; ?>" role="alert">
                                 <?= $_SESSION['flash']; ?>
                                 <?php unset($_SESSION['flash']); // Remove flash after displaying ?>
                             </div>

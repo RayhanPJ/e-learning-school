@@ -4,6 +4,13 @@
 
 <div class="wrapper">
     <div class="container-fluid">
+        <!-- Flash Message -->
+        <?php if (isset($_SESSION['flash'])): ?>
+        <div class="alert <?= $_SESSION['class']; ?>" role="alert">
+            <?= $_SESSION['flash']; ?>
+            <?php unset($_SESSION['flash']); // Remove flash after displaying ?>
+        </div>
+        <?php endif; ?>
         <h1>Dashboard</h1>
         <div class="card" style="min-height:400px;">
             <div class="card-header">
@@ -50,7 +57,6 @@
                 <?php else: ?>
                     <div id="no-data">
                         <center>
-                            <img src="../assets/img/no-data.svg" height="400" width="400"/>
                             <center><h5>No Data</h5></center>
                         </center>
                     </div>

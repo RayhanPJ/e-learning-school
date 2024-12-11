@@ -99,7 +99,9 @@ if (isset($_SESSION['old'])) {
                         <?php if($page == 'detail'): ?>
                         <!-- Questions Table -->
                         <h3 class="mt-4">Associated Questions</h3>
-                        <a class="btn btn-sm btn-success mb-3" href="<?= $_ENV['BASE_URL']; ?>/questions-create/<?= $tests['id']?>">Add New Question</a>
+                            <?php if($isQuestionLimit == false): ?>
+                                <a class="btn btn-sm btn-success mb-3" href="<?= $_ENV['BASE_URL']; ?>/questions-create/<?= $tests['id']?>">Add New Question</a>
+                            <?php endif; ?>
                         <table id="datatable" class="table table-bordered">
                             <thead>
                                 <tr>
@@ -128,7 +130,7 @@ if (isset($_SESSION['old'])) {
                                         <td>
                                             <div class="d-flex justify-content-between">
                                                 <a class="btn btn-sm btn-primary w-100" style="margin-right: 12px;" href="<?= $_ENV['BASE_URL']; ?>/questions-edit/<?= $question['id'] ?>">Edit</a>
-                                                <a class="btn btn-sm btn-danger w-100" href="<?= $_ENV['BASE_URL']; ?>/questions/delete/<?= $question['id'] ?>">Delete</a>
+                                                <!-- <a class="btn btn-sm btn-danger w-100" href="<?= $_ENV['BASE_URL']; ?>/questions/delete/<?= $question['id'] ?>/<?= $tests['id']; ?>">Delete</a> -->
                                             </div>
                                         </td>
                                     </tr>

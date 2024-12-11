@@ -57,5 +57,24 @@ class QuestionTestMappingModel {
         $stmt->bindValue(':test_id', $test_id); // Mengikat nilai test_id
         return $stmt->execute(); // Mengembalikan true jika berhasil
     }
+
+    public function isQuestionCountEqualToTotal($test_id) {
+        // Mengambil total_questions dari tabel test
+        $queryTotalQuestions = "SELECT total_questions FROM tests WHERE id = :test_id";
+        $stmtTotal = $this->db->prepare($queryTotalQuestions);
+        $stmtTotal->bindValue(':test_id', $test_id, PDO::PARAM_INT);
+        $stmtTotal->execute();
+        $totalQuestions = $stmtTotal->fetchColumn(); // Mengambil total_questions
+
+        // Menghitung jumlah question_id dari tabel question_test_mapping untuk test_id yang sama
+        $queryCountQuestions = "SELECT COUNT(question_id) FROM question_test_mapping WHERE test_id = :test_id";
+        $stmtCount = $this->db->prepare($queryCountQuestions);
+        $stmtCount->bindValue(':test_id', $test_id, PDO::PARAM_INT);
+        $stmtCount->execute();
+        $countQuestions = $stmtCount->fetchColumn(); // Mengambil jumlah pertanyaan yang terakumulasi
+
+        // Membandingkan total_questions dengan jumlah pertanyaan
+        return $totalQuestions === $countQuestions; // Mengembalikan true jika sama, false jika berbeda
+    }
 }
 ?>

@@ -1,7 +1,13 @@
 <?php require(__DIR__ . '/../../layouts/meta.php'); ?>
 <div class="accountbg"></div>
 <div class="wrapper-page">
-
+    <!-- Flash Message -->
+    <?php if (isset($_SESSION['flash'])): ?>
+    <div class="alert <?= $_SESSION['class']; ?>" role="alert">
+        <?= $_SESSION['flash']; ?>
+        <?php unset($_SESSION['flash']); // Hapus flash setelah ditampilkan ?>
+    </div>
+    <?php endif; ?>
     <div class="card">
         <div class="card-body">
 

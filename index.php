@@ -168,6 +168,11 @@ switch (true) {
         $testController->edit($matches[1]);
         break;
 
+    // Rute untuk update form edit test
+    case preg_match('/^\/tests-update\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'POST':
+        $testController->update($matches[1]);
+        break;
+
     // Rute untuk menampilkan form detail test
     case preg_match('/^\/tests-detail\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
         $testController->detail($matches[1]);
@@ -198,6 +203,11 @@ switch (true) {
         $questionsController->edit($matches[1]);
         break;
 
+    // Rute untuk menampilkan form edit questions
+    case preg_match('/^\/questions-update\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
+        $questionsController->update($matches[1]);
+        break;
+
     // Rute untuk menampilkan form pembuatan questions
     case preg_match('/^\/questions-create\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
         $questionsController->create($matches[1]);
@@ -219,8 +229,10 @@ switch (true) {
         break;
 
     // Rute untuk menghapus questions
-    case preg_match('/^\/questions\/delete\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
-        $questionsController->delete($matches[1]);
+    case preg_match('/^\/questions\/delete\/(\d+)\/(\d+)$/', $requestUri, $matches) && $requestSrv === 'GET':
+        $questionId = $matches[1]; // ID pertanyaan
+        $testId = $matches[2]; // ID ujian
+        $questionsController->delete($questionId, $testId);
         break;
 
     default:

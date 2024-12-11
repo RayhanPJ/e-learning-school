@@ -42,11 +42,14 @@ class AuthController extends BaseController
             if ($user) {
                 $this->initializeUserSession($user);
                 // Redirect ke halaman dashboard
+                $_SESSION['flash'] = 'Selamat datang ' . $_SESSION['username'];
+                $_SESSION['class'] = 'alert-primary';
                 header('Location: ' . $_ENV['BASE_URL'] . '/dashboard');
                 exit;
             } else {
                 // Set flash message for failed login
                 $_SESSION['flash'] = 'Username atau password salah.';
+                $_SESSION['class'] = 'alert-danger';
                 header('Location: ' . $_ENV['BASE_URL'] . '/login'); // Redirect back to login
                 exit;
             }
@@ -67,6 +70,7 @@ class AuthController extends BaseController
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['username'] = $user['username'];
         $_SESSION['role'] = $user['role'];
+        $_SESSION['test_id'] = $user['test_id'] == null ? 0 : $user['test_id'];
     }
 
     /**

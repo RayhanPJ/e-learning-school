@@ -66,10 +66,12 @@ class TeachersController extends BaseController
         // Jika validasi berhasil, simpan data
         if ($this->userModel->createUser($username, $password, $role)) {
             $_SESSION['flash'] = 'User berhasil ditambahkan.';
+            $_SESSION['class'] = 'alert-success';
             header('Location: ' . $_ENV['BASE_URL'] . '/class');
             exit;
         } else {
             $_SESSION['flash'] = 'User gagal ditambahkan.';
+            $_SESSION['class'] = 'alert-warning';
             header('Location: ' . $_ENV['BASE_URL'] . '/class');
             exit;
         }
@@ -115,10 +117,12 @@ class TeachersController extends BaseController
         // Jika validasi berhasil, update data
         if ($this->userModel->updateUser($id, $username, $password, $role)) {
             $_SESSION['flash'] = 'User berhasil diperbarui.';
+            $_SESSION['class'] = 'alert-success';
             header('Location: ' . $_ENV['BASE_URL'] . '/class');
             exit;
         } else {
             $_SESSION['flash'] = 'User gagal diperbarui.';
+            $_SESSION['class'] = 'alert-warning';
             header('Location: ' . $_ENV['BASE_URL'] . '/class');
             exit;
         }
@@ -133,6 +137,7 @@ class TeachersController extends BaseController
 
         if ($this->userModel->deleteUser($id)) {
             $_SESSION['flash'] = 'Pengguna berhasil dihapus.';
+            $_SESSION['class'] = 'alert-danger';
             header('Location: ' . $_ENV['BASE_URL'] . '/users');
             exit;
         } else {

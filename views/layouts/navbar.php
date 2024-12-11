@@ -8,8 +8,8 @@
                     <a href="<?= $_ENV['BASE_URL']; ?>/dashboard"><i class="mdi mdi-airplay"></i>Dashboard</a>
                 </li>
 
+                <?php if($_SESSION['role'] == 'admin'): ?>
                 <li class="has-submenu">
-                    <?php if($_SESSION['role'] == 'admin'): ?>
                     <a href="#"><i class="mdi mdi-layers"></i>Management</a>
                     <ul class="submenu">
                         <li><a href="<?= $_ENV['BASE_URL']; ?>/users">Users</a></li>
@@ -17,13 +17,13 @@
                         <li><a href="<?= $_ENV['BASE_URL']; ?>/registers">Registers</a></li>
                         <li><a href="<?= $_ENV['BASE_URL']; ?>/tests">Tests</a></li>
                     </ul>
-                    <?php endif ?>
                     <!-- <a href=""><i class="mdi mdi"></i></a> -->
                 </li>
 
                 <li class="has-submenu">
                     <a href="<?= $_ENV['BASE_URL']; ?>/tests-report"><i class="mdi mdi-book"></i>Report</a>
                 </li>
+                <?php endif ?>
 
             </ul>
             <!-- End navigation menu -->

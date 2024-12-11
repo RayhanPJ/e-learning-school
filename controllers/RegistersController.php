@@ -65,11 +65,13 @@ class RegistersController extends BaseController
             trim($_POST['major_id'])
         );
 
+        $_SESSION['class'] = 'alert-success';
         $_SESSION['flash'] = 'Registrasi berhasil ditambahkan.';
 
         if ($registers) {
             $this->addStudentData($registers);
         } else {
+            $_SESSION['class'] = 'alert-danger';
             $_SESSION['flash'] = 'Student gagal ditambahkan.';
             header('Location: ' . $_ENV['BASE_URL'] . '/registers-create');
             exit;
@@ -114,8 +116,10 @@ class RegistersController extends BaseController
         $majorId = $registers['major_id'];
 
         if ($this->studentDataModel->createStudentData($registersId, $majorId)) {
+            $_SESSION['class'] = 'alert-success';
             $_SESSION['flash'] = 'Student Data berhasil ditambahkan.';
         } else {
+            $_SESSION['class'] = 'alert-danger';
             $_SESSION['flash'] = 'Student Data gagal ditambahkan';
         }
 
@@ -171,8 +175,10 @@ class RegistersController extends BaseController
 
         // Perbarui data
         if ($this->registersModel->updateRegister($id, trim($_POST['name']), trim($_POST['date_of_birth']), trim($_POST['phone']), trim($_POST['major_id']))) {
+            $_SESSION['class'] = 'alert-success';
             $_SESSION['flash'] = 'Register berhasil diperbarui.';
         } else {
+            $_SESSION['class'] = 'alert-danger';
             $_SESSION['flash'] = 'Register gagal diperbarui.';
         }
 
@@ -197,8 +203,10 @@ class RegistersController extends BaseController
 
         if ($this->registersModel->confirmRegister($id, $status_payment)) {
             $_SESSION['flash'] = 'Payment Berhasil.';
+            $_SESSION['class'] = 'alert-success';
         } else {
             $_SESSION['flash'] = 'Payment Gagal.';
+            $_SESSION['class'] = 'alert-warning';
         }
 
         header('Location: ' . $_ENV['BASE_URL'] . ($_SESSION['role'] == 'admin' ? '/registers' : '/registers-create'));
@@ -212,6 +220,7 @@ class RegistersController extends BaseController
         $this->authorize('admin');
         if ($this->registersModel->deleteRegister($id)) {
             $_SESSION['flash'] = 'Registers berhasil dihapus.';
+            $_SESSION['class'] = 'alert-danger';
             header('Location: ' . $_ENV['BASE_URL'] . '/registers');
             exit;
         } else {

@@ -16,6 +16,14 @@ if (isset($_SESSION['errors'])) {
                     <div class="card-body">
 
                         <h2 class="mt-0 header-title">List of Students</h2>
+
+                        <!-- Flash Message -->
+                        <?php if (isset($_SESSION['flash'])): ?>
+                            <div class="alert <?= $_SESSION['class']; ?>" role="alert">
+                                <?= $_SESSION['flash']; ?>
+                                <?php unset($_SESSION['flash']); // Hapus flash setelah ditampilkan ?>
+                            </div>
+                        <?php endif; ?>
                         <a class="btn btn-sm btn-success mb-3" href="<?= $_ENV['BASE_URL']; ?>/registers-create">Add New Student</a>
                         <table id="datatable" class="table table-bordered">
                             <thead>

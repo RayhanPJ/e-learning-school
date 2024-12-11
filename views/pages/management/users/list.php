@@ -10,6 +10,14 @@
                     <div class="card-body">
 
                         <h2 class="mt-0 header-title">List Teachers</h2>
+
+                        <!-- Flash Message -->
+                        <?php if (isset($_SESSION['flash'])): ?>
+                            <div class="alert <?= $_SESSION['class']; ?>" role="alert">
+                                <?= $_SESSION['flash']; ?>
+                                <?php unset($_SESSION['flash']); // Remove flash after displaying ?>
+                            </div>
+                        <?php endif; ?>
                         <a class="btn btn-sm btn-success mb-3" href="<?= $_ENV['BASE_URL']; ?>/users-create">Add New User</a>
                         <table id="datatable" class="table table-bordered">
                             <thead>

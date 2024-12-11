@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../models/QuestionModel.php';
 require_once __DIR__ . '/../models/QuestionTestMappingModel.php'; // Sertakan model pemetaan
 require_once __DIR__ . '/../models/ScoreModel.php'; // Sertakan model skor
+require_once __DIR__ . '/../models/StudentModel.php'; // Sertakan model skor
 require_once __DIR__ . '/../controllers/BaseController.php';
 require_once __DIR__ . '/../vendor/autoload.php'; // Lokasi autoloader vendor
 
@@ -12,6 +13,7 @@ class QuestionController extends BaseController
     private $questionModel;
     private $questionTestMappingModel; // Tambahkan model pemetaan
     private $scoreModel; // Tambahkan model skor
+    private $studentModel; // Tambahkan model skor
 
     public function __construct()
     {
@@ -19,6 +21,7 @@ class QuestionController extends BaseController
         $this->questionModel = new QuestionModel(); // Menginisialisasi model Question
         $this->questionTestMappingModel = new QuestionTestMappingModel(); // Menginisialisasi model pemetaan
         $this->scoreModel = new ScoreModel(); // Menginisialisasi model Score
+        $this->studentModel = new StudentModel(); // Menginisialisasi model Score
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
         $dotenv->load(); // Memuat variabel lingkungan
     }
@@ -59,13 +62,13 @@ class QuestionController extends BaseController
         
         if (!$question) {
             $_SESSION['flash'] = 'Pertanyaan tidak ditemukan.'; // Mengatur pesan flash jika pertanyaan tidak ditemukan
-            header('Location: ' . $_ENV['BASE_URL'] . '/questions'); // Mengarahkan ke daftar pertanyaan
+            header('Location: ' . $_ENV['BASE_URL'] . '/dashboard'); // Mengarahkan ke daftar pertanyaan
             exit;
         }
 
         require_once __DIR__ . '/../views/pages/management/question/edit.php'; // Memuat tampilan untuk mengedit pertanyaan
 
-        return $questions; // Mengembalikan pertanyaan
+        return $question; // Mengembalikan pertanyaan
     }
 
     /**
@@ -101,16 +104,16 @@ class QuestionController extends BaseController
         );
 
         if ($question) {
-            $question_id = $question['id']; // Mendapatkan ID pertanyaan yang baru dimasukkan
-
-            $this->questionTestMappingModel->createMapping($question_id, trim($_POST['tests_id'])); // Membuat pemetaan
-            $this->scoreModel->createScore(trim($_POST['tests_id']), $question_id); // Membuat entri skor
+            $this->questionTestMappingModel->createMapping($question['id'], trim($_POST['tests_id'])); // Membuat pemetaan
+            $this->scoreModel->createScore(trim($_POST['tests_id']), $question['id']); // Membuat entri skor
 
             $_SESSION['flash'] = 'Pertanyaan berhasil dibuat.'; // Mengatur pesan sukses
+            $_SESSION['class'] = 'alert-success';
             header('Location: ' . $_ENV['BASE_URL'] . '/tests-detail/' . $_POST['tests_id']); // Mengarahkan ke detail ujian
             exit;
         } else {
             $_SESSION['flash'] = 'Gagal membuat pertanyaan.'; // Mengatur pesan gagal
+            $_SESSION['class'] = 'alert-warning';
             header('Location: ' . $_ENV['BASE_URL'] . '/questions-create'); // Mengarahkan kembali ke formulir pembuatan
             exit;
         }
@@ -151,10 +154,12 @@ class QuestionController extends BaseController
 
         if ($updated) {
             $_SESSION['flash'] = 'Pertanyaan berhasil diperbarui.'; // Mengatur pesan sukses
-            header('Location: ' . $_ENV['BASE_URL'] . '/questions'); // Mengarahkan ke daftar pertanyaan
+            $_SESSION['class'] = 'alert-success';
+            header('Location: ' . $_ENV['BASE_URL'] . '/dashboard'); // Mengarahkan ke daftar pertanyaan
             exit;
         } else {
             $_SESSION['flash'] = 'Gagal memperbarui pertanyaan.'; // Mengatur pesan gagal
+            $_SESSION['class'] = 'alert-warning';
             header('Location: ' . $_ENV['BASE_URL'] . '/questions-edit/' . $id); // Mengarahkan kembali ke formulir edit
             exit;
         }
@@ -163,14 +168,16 @@ class QuestionController extends BaseController
     /**
      * Menghapus pertanyaan dari database.
      */
-    public function delete($id)
+    public function delete($id, $test_id)
     {
         $this->authorize('admin'); // Memastikan pengguna memiliki otorisasi
 
+        $this->questionTestMappingModel->deleteMapping($id, $test_id); // Opsional menghapus pemetaan
+        $this->scoreModel->deleteByQuestionId($id); // Opsional menghapus pemetaan
         if ($this->questionModel->deleteQuestion($id)) {
-            $this->questionTestMappingModel->deleteMapping($id, null); // Opsional menghapus pemetaan
             $_SESSION['flash'] = 'Pertanyaan berhasil dihapus.'; // Mengatur pesan sukses
-            header('Location: ' . $_ENV['BASE_URL'] . '/questions'); // Mengarahkan ke daftar pertanyaan
+            $_SESSION['class'] = 'alert-danger';
+            header('Location: ' . $_ENV['BASE_URL'] . '/dashboard'); // Mengarahkan ke daftar pertanyaan
             exit;
         } else {
             die('Gagal menghapus pertanyaan.'); // Menangani kegagalan
@@ -211,10 +218,10 @@ class QuestionController extends BaseController
                     // Memeriksa apakah opsi yang dipilih benar
                     if ($question['correctAns'] == $selected_option) {
                         // Memperbarui jumlah jawaban benar di tabel skor
-                        $this->scoreModel->updateCorrectCount($question_id, $student_id);
+                        $this->scoreModel->updateCorrectCount($question_id);
                     } else {
                         // Memperbarui jumlah jawaban salah di tabel skor
-                        $this->scoreModel->updateWrongCount($question_id, $student_id);
+                        $this->scoreModel->updateWrongCount($question_id);
                     }
 
                     // Mendapatkan skor untuk pertanyaan

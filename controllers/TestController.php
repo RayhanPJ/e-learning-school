@@ -6,6 +6,7 @@ require_once __DIR__ . '/../models/MajorModel.php';
 require_once __DIR__ . '/../models/StatusModel.php';
 require_once __DIR__ . '/../models/QuestionModel.php';
 require_once __DIR__ . '/../models/ScoreCalculationModel.php';
+require_once __DIR__ . '/../models/QuestionTestMappingModel.php';
 require_once __DIR__ . '/../controllers/BaseController.php';
 require_once __DIR__ . '/../vendor/autoload.php'; // Lokasi autoloader vendor
 
@@ -20,6 +21,7 @@ class TestController extends BaseController
     private $statusModel;
     private $questionModel;
     private $scoreCalculationModel;
+    private $questionTestMappingModel;
 
     public function __construct()
     {
@@ -31,6 +33,7 @@ class TestController extends BaseController
         $this->statusModel = new StatusModel(); // Menginisialisasi model Status
         $this->questionModel = new QuestionModel(); // Menginisialisasi model Pertanyaan
         $this->scoreCalculationModel = new ScoreCalculationModel(); // Menginisialisasi model Perhitungan Skor
+        $this->questionTestMappingModel = new QuestionTestMappingModel(); // Menginisialisasi model Perhitungan Skor
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
         $dotenv->load(); // Memuat variabel lingkungan
     }
@@ -52,7 +55,7 @@ class TestController extends BaseController
      */
     public function report()
     {
-        $this->checkUserLogin(); // Memastikan pengguna sudah login
+        $this->authorize('admin'); // Memastikan pengguna sudah login
         $tests = $this->testModel->getAllTestsWithStudentStatus(); // Mengambil semua data ujian
 
         // Inisialisasi model perhitungan skor
@@ -144,6 +147,7 @@ class TestController extends BaseController
         $status = $this->statusModel->getAllStatus(); // Mengambil semua status
         $tests = $this->testModel->getTestById($id); // Mengambil ujian berdasarkan ID
         $questions = $this->questionModel->getAllQuestions(); // Mengambil semua pertanyaan
+        $isQuestionLimit = $this->questionTestMappingModel->isQuestionCountEqualToTotal($id); // Mengambil ujian berdasarkan ID
         $page = 'detail'; // Menentukan halaman detail
         
         $data = [
@@ -151,7 +155,8 @@ class TestController extends BaseController
             'status' => $status,
             'tests' => $tests,
             'questions' => $questions,
-            'page' => $page
+            'page' => $page,
+            'isQuestionLimit' => $isQuestionLimit
         ];
         
         require_once __DIR__ . '/../views/pages/management/test/edit.php'; // Memuat tampilan untuk detail ujian
@@ -167,6 +172,15 @@ class TestController extends BaseController
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $this->handleStore(); // Menangani operasi penyimpanan
+        }
+    }
+
+    public function update($id)
+    {
+        $this->authorize('admin'); // Memastikan pengguna memiliki otorisasi
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->handleUpdate($id); // Menangani operasi penyimpanan
         }
     }
 
@@ -193,10 +207,46 @@ class TestController extends BaseController
         if ($test) {
             $this->handleStudentCreation($test['id'], $_POST['major_id']); // Menangani pembuatan siswa
             $_SESSION['flash'] = 'Test berhasil dibuat.'; // Mengatur pesan sukses
+            $_SESSION['class'] = 'alert-success';
             header('Location: ' . $_ENV['BASE_URL'] . '/tests'); // Mengarahkan ke daftar ujian
             exit;
         } else {
             $_SESSION['flash'] = 'Gagal membuat test.'; // Mengatur pesan gagal
+            $_SESSION['class'] = 'alert-warning';
+            header('Location: ' . $_ENV['BASE_URL'] . '/test-create'); // Mengarahkan kembali ke formulir pembuatan
+            exit;
+        }
+    }
+
+    private function handleUpdate($id)
+    {
+        $errors = $this->validateTestInputs($_POST); // Memvalidasi input
+
+        // Jika ada kesalahan, kembalikan ke tampilan dengan kesalahan
+        if (!empty($errors)) {
+            $this->handleValidationErrors($errors, $_POST, '/test-create/' . $id);
+        }
+
+        // Simpan test ke database
+        $test = $this->testModel->updateTest(
+            $id,
+            $_SESSION['user_id'],
+            trim($_POST['test_name']),
+            trim($_POST['test_date']),
+            trim($_POST['test_status']),
+            trim($_POST['subject_name']),
+            trim($_POST['total_questions']),
+            trim($_POST['major_id'])
+        );
+
+        if ($test) {
+            $_SESSION['flash'] = 'Test berhasil diupdate.'; // Mengatur pesan sukses
+            $_SESSION['class'] = 'alert-success';
+            header('Location: ' . $_ENV['BASE_URL'] . '/tests-detail/' . $id); // Mengarahkan ke daftar ujian
+            exit;
+        } else {
+            $_SESSION['flash'] = 'Gagal memupdate test.'; // Mengatur pesan gagal
+            $_SESSION['class'] = 'alert-warning';
             header('Location: ' . $_ENV['BASE_URL'] . '/test-create'); // Mengarahkan kembali ke formulir pembuatan
             exit;
         }
@@ -223,6 +273,7 @@ class TestController extends BaseController
 
         if ($this->testModel->deleteTest($id)) {
             $_SESSION['flash'] = 'Test berhasil dihapus.'; // Mengatur pesan sukses
+            $_SESSION['class'] = 'alert-danger';
             header('Location: ' . $_ENV['BASE_URL'] . '/tests'); // Mengarahkan ke daftar ujian
             exit;
         } else {

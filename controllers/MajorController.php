@@ -105,10 +105,12 @@ class MajorController extends BaseController
         // Jika validasi berhasil, update data
         if ($this->majorModel->updateMajor($id, trim($_POST['name']), trim($_POST['price']))) {
             $_SESSION['flash'] = 'Major berhasil diperbarui.';
+            $_SESSION['class'] = 'alert-success';
             header('Location: ' . $_ENV['BASE_URL'] . '/major');
             exit;
         } else {
             $_SESSION['flash'] = 'Major gagal diperbarui.';
+            $_SESSION['class'] = 'alert-warning';
             header('Location: ' . $_ENV['BASE_URL'] . '/major');
             exit;
         }
@@ -123,6 +125,7 @@ class MajorController extends BaseController
 
         if ($this->majorModel->deleteMajor($id)) {
             $_SESSION['flash'] = 'Major berhasil dihapus.';
+            $_SESSION['class'] = 'alert-danger';
             header('Location: ' . $_ENV['BASE_URL'] . '/major');
             exit;
         } else {

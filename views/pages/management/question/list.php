@@ -13,7 +13,7 @@
 
                         <!-- Flash Message -->
                         <?php if (isset($_SESSION['flash'])): ?>
-                            <div class="alert alert-success" role="alert">
+                            <div class="alert <?= $_SESSION['class']; ?>" role="alert">
                                 <?= $_SESSION['flash']; ?>
                                 <?php unset($_SESSION['flash']); // Remove flash after displaying ?>
                             </div>

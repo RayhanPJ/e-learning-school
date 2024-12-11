@@ -23,6 +23,7 @@ class DashboardController extends BaseController
      */
     public function dashboard()
     {
+        // var_dump($_SESSION);die;
         $this->checkUserLogin(); // Memastikan pengguna sudah login
 
         // Mengambil data ujian berdasarkan peran pengguna
@@ -31,7 +32,7 @@ class DashboardController extends BaseController
             $tests = $this->testModel->getAllTestsWithStatus(); // Mengambil ujian dengan status untuk admin
         } else {
             // Jika pengguna adalah siswa, ambil ujian dengan status siswa
-            $tests = $this->testModel->getAllTestsWithStudentStatus($_SESSION['user_id']); // Mengambil ujian dengan status siswa
+            $tests = $this->testModel->getTestsByTestId($_SESSION['test_id'], $_SESSION['user_id']); // Mengambil ujian dengan status siswa
         }
 
         // Menyiapkan data untuk tampilan

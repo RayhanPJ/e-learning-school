@@ -67,7 +67,39 @@ class TestModel {
         $stmt->execute(); // Menjalankan kueri
     
         return $stmt->fetchAll(PDO::FETCH_ASSOC); // Mengembalikan semua hasil sebagai array asosiatif
-    }   
+    }  
+    
+    public function getTestsByTestId($test_id, $student_id ) {
+        // var_dump($test_id, $student_id);die;
+        $query = "
+            SELECT 
+                t.*,
+                m.name AS major_name,
+                s.name AS status_name,
+                te.username AS teacher_username,
+                st.score AS student_score,
+                st.status AS student_status
+            FROM 
+                tests t
+            JOIN 
+                major m ON t.major_id = m.id 
+            JOIN 
+                status s ON t.status_id = s.id
+            JOIN 
+                teachers te ON t.teacher_id = te.id
+            LEFT JOIN 
+                students st ON t.id = st.test_id AND st.id = :student_id
+            WHERE 
+                t.id = :test_id
+        ";
+    
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':test_id', $test_id); // Mengikat test_id
+        $stmt->bindValue(':student_id', $student_id); // Mengikat ID siswa jika diberikan
+        $stmt->execute(); // Menjalankan kueri
+    
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Mengembalikan semua hasil sebagai array asosiatif
+    }
 
     // Method untuk membuat ujian baru
     public function createTest($teacher_id, $name, $date, $status_id, $subject, $total_questions, $major_id) {
@@ -96,13 +128,28 @@ class TestModel {
     }
 
     // Method untuk memperbarui ujian
-    public function updateTest($id, $status_id) {
-        $query = "UPDATE tests SET status_id = :status_id WHERE id = :id"; // Kuery untuk memperbarui status ujian
+    public function updateTest($id, $teacher_id, $name, $date, $status_id, $subject, $total_questions, $major_id) {
+        $query = "UPDATE tests 
+                  SET teacher_id = :teacher_id, 
+                      name = :name, 
+                      date = :date, 
+                      status_id = :status_id, 
+                      subject = :subject, 
+                      total_questions = :total_questions, 
+                      major_id = :major_id 
+                  WHERE id = :id"; // Kuery untuk memperbarui ujian
         $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':teacher_id', $teacher_id); // Mengikat nilai teacher_id
+        $stmt->bindValue(':name', $name); // Mengikat nilai nama ujian
+        $stmt->bindValue(':date', $date); // Mengikat nilai tanggal ujian
         $stmt->bindValue(':status_id', $status_id); // Mengikat nilai status_id
+        $stmt->bindValue(':subject', $subject); // Mengikat nilai subjek
+        $stmt->bindValue(':total_questions', $total_questions); // Mengikat nilai total pertanyaan
+        $stmt->bindValue(':major_id', $major_id); // Mengikat nilai major_id
         $stmt->bindValue(':id', $id); // Mengikat nilai ID
         return $stmt->execute(); // Mengembalikan true jika berhasil
     }
+    
 
     // Method untuk menghapus ujian
     public function deleteTest($id) {
