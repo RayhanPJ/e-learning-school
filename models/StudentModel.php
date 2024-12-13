@@ -17,40 +17,20 @@ class StudentModel {
     }
 
     // Method untuk membuat siswa baru
-    public function createStudent($test_id, $rollno, $username, $password, $major_id) {
-        // Check if the student already exists
-        $query = "
-            SELECT s.id
-            FROM students s
-            JOIN student_data sd ON s.rollno = sd.rollno
-            WHERE sd.major_id = :major_id AND s.rollno = :rollno
-        ";
-    
-        $stmt = $this->db->prepare($query); // Prepare the statement
-        $stmt->bindValue(':major_id', $major_id); // Bind the major_id value
-        $stmt->bindValue(':rollno', $rollno); // Bind the rollno value
-        $stmt->execute(); // Execute the query
-        $existingStudentId = $stmt->fetchColumn(); // Fetch the existing student ID
-    
-        // If the student already exists, return the existing student
-        if ($existingStudentId) {
-            return $this->getStudentById($existingStudentId); // Return the existing student
-        }
-    
-        // If the student does not exist, insert a new student
+    public function createStudent($test_id, $rollno, $username, $password, int $score = 0, int $status = 0, string $role = 'student') {
         $query = "INSERT INTO students (test_id, rollno, username, password, score, status, role) 
-                  VALUES (:test_id, :rollno, :username, :password, :score, :status, :role)"; // Query to save new student
-        $stmt = $this->db->prepare($query); // Prepare the statement
-        $stmt->bindValue(':test_id', $test_id); // Bind the test_id value
-        $stmt->bindValue(':rollno', $rollno); // Bind the rollno value
-        $stmt->bindValue(':username', strtolower($username)); // Bind the username (in lowercase)
-        $stmt->bindValue(':password', $password); // Bind the password
-        $stmt->bindValue(':score', 0); // Bind the score
-        $stmt->bindValue(':status', 0); // Bind the status
-        $stmt->bindValue(':role', 'student'); // Bind the role
-        $stmt->execute(); // Execute the query
-    
-        return $this->getStudentById($this->db->lastInsertId()); // Return the newly created student
+                  VALUES (:test_id, :rollno, :username, :password, :score, :status, :role)"; // Kuery untuk menyimpan siswa baru
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':test_id', $test_id); // Mengikat nilai test_id
+        $stmt->bindValue(':rollno', $rollno); // Mengikat nilai rollno
+        $stmt->bindValue(':username', strtolower($username)); // Mengikat nilai username (dalam huruf kecil)
+        $stmt->bindValue(':password', $password); // Mengikat nilai password
+        $stmt->bindValue(':score', $score); // Mengikat nilai score
+        $stmt->bindValue(':status', $status); // Mengikat nilai status
+        $stmt->bindValue(':role', $role); // Mengikat nilai role
+        $stmt->execute(); // Menjalankan kueri
+
+        return $this->getStudentById($this->db->lastInsertId()); // Mengembalikan siswa yang baru dibuat
     }
 
     // Method untuk mendapatkan siswa berdasarkan ID

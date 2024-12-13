@@ -264,7 +264,7 @@ private function handleStudentCreation($test_id, $major_id)
         $password = $this->generateRandomString(8 - strlen($test_id)) . $test_id; // Menghasilkan password acak
         
         // Membuat entri siswa jika belum ada
-        $this->studentModel->createStudent($test_id, $rollno, $username, $password, $major_id); // Membuat entri siswa
+        $this->studentModel->createStudent($test_id, $rollno, $username, $password); // Membuat entri siswa
     }
 }
 

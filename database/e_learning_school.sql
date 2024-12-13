@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 13 Des 2024 pada 21.57
+-- Waktu pembuatan: 13 Des 2024 pada 22.24
 -- Versi server: 10.4.27-MariaDB
 -- Versi PHP: 8.2.0
 
@@ -53,6 +53,14 @@ CREATE TABLE `questions` (
   `score` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data untuk tabel `questions`
+--
+
+INSERT INTO `questions` (`id`, `title`, `optionA`, `optionB`, `optionC`, `optionD`, `correctAns`, `score`) VALUES
+(39, 'asd', 'asd', 'asd', 'asd', 'asd', 'A', 10),
+(40, 'asd', 'asd', 'asd', 'asd', 'asd', 'A', 10);
+
 -- --------------------------------------------------------
 
 --
@@ -63,6 +71,14 @@ CREATE TABLE `question_test_mapping` (
   `question_id` int(11) NOT NULL,
   `test_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `question_test_mapping`
+--
+
+INSERT INTO `question_test_mapping` (`question_id`, `test_id`) VALUES
+(39, 18),
+(40, 18);
 
 -- --------------------------------------------------------
 
@@ -78,6 +94,15 @@ CREATE TABLE `registers` (
   `major_id` int(11) NOT NULL,
   `status_payment` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `registers`
+--
+
+INSERT INTO `registers` (`id`, `name`, `date_of_birth`, `phone`, `major_id`, `status_payment`) VALUES
+(23, 'han', '2024-12-14', '123', 1, 1),
+(24, 'asd', '2024-12-14', '123', 1, 1),
+(25, 'asd', '2024-12-14', '123', 2, 1);
 
 -- --------------------------------------------------------
 
@@ -113,8 +138,18 @@ CREATE TABLE `students` (
   `password` varchar(255) NOT NULL,
   `score` int(255) NOT NULL,
   `status` tinyint(1) NOT NULL,
-  `role` varchar(255) NOT NULL
+  `role` varchar(255) NOT NULL,
+  `student_data_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `students`
+--
+
+INSERT INTO `students` (`id`, `test_id`, `rollno`, `username`, `password`, `score`, `status`, `role`, `student_data_id`) VALUES
+(15, 18, 2, 'han', 'dGfDKC18', 10, 1, 'student', 23),
+(16, 18, 3, 'asd', 'Ilcw4018', 20, 1, 'student', 24),
+(17, 19, 2, 'asd', 'C8hPLv19', 0, 0, 'student', 25);
 
 -- --------------------------------------------------------
 
@@ -128,6 +163,15 @@ CREATE TABLE `student_data` (
   `major_id` int(11) NOT NULL,
   `registers_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `student_data`
+--
+
+INSERT INTO `student_data` (`id`, `rollno`, `major_id`, `registers_id`) VALUES
+(23, 2, 1, 23),
+(24, 3, 1, 24),
+(25, 2, 2, 25);
 
 -- --------------------------------------------------------
 
@@ -165,6 +209,14 @@ CREATE TABLE `tests` (
   `total_questions` int(11) NOT NULL,
   `major_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `tests`
+--
+
+INSERT INTO `tests` (`id`, `teacher_id`, `name`, `date`, `status_id`, `subject`, `total_questions`, `major_id`) VALUES
+(18, 2, 'asd', '2024-12-14', 2, 'asd', 2, 1),
+(19, 2, 'asd', '2024-12-14', 2, 'asd', 2, 2);
 
 --
 -- Indexes for dumped tables
@@ -208,7 +260,8 @@ ALTER TABLE `status`
 ALTER TABLE `students`
   ADD PRIMARY KEY (`id`),
   ADD KEY `students_fk0` (`test_id`),
-  ADD KEY `students_fk1` (`rollno`);
+  ADD KEY `students_fk1` (`rollno`),
+  ADD KEY `students_fk_student_data` (`student_data_id`);
 
 --
 -- Indeks untuk tabel `student_data`
@@ -246,13 +299,13 @@ ALTER TABLE `major`
 -- AUTO_INCREMENT untuk tabel `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT untuk tabel `registers`
 --
 ALTER TABLE `registers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT untuk tabel `status`
@@ -264,13 +317,13 @@ ALTER TABLE `status`
 -- AUTO_INCREMENT untuk tabel `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT untuk tabel `student_data`
 --
 ALTER TABLE `student_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT untuk tabel `teachers`
@@ -282,7 +335,7 @@ ALTER TABLE `teachers`
 -- AUTO_INCREMENT untuk tabel `tests`
 --
 ALTER TABLE `tests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
@@ -305,7 +358,8 @@ ALTER TABLE `registers`
 -- Ketidakleluasaan untuk tabel `students`
 --
 ALTER TABLE `students`
-  ADD CONSTRAINT `students_fk0` FOREIGN KEY (`test_id`) REFERENCES `tests` (`id`);
+  ADD CONSTRAINT `students_fk0` FOREIGN KEY (`test_id`) REFERENCES `tests` (`id`),
+  ADD CONSTRAINT `students_fk_student_data` FOREIGN KEY (`student_data_id`) REFERENCES `student_data` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `student_data`
