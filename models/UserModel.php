@@ -32,13 +32,12 @@ class UserModel
      * @param string $email
      * @return bool
      */
-    public function createUser($username, $password, $email, string $role = 'admin')
+    public function createUser($username, $password, string $role = 'admin')
     {
-        $query = "INSERT INTO teachers (username, password, email, role) VALUES (:username, :password, :email, :role)"; // Kuery untuk menyimpan pengguna baru
+        $query = "INSERT INTO teachers (username, password, role) VALUES (:username, :password, :role)"; // Kuery untuk menyimpan pengguna baru
         $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
         $stmt->bindValue(':username', $username); // Mengikat nilai username
         $stmt->bindValue(':password', $password); // Mengikat nilai password
-        $stmt->bindValue(':email', $email); // Mengikat nilai email
         $stmt->bindValue(':role', $role); // Mengikat nilai role
         return $stmt->execute(); // Mengembalikan true jika berhasil
     }
@@ -66,12 +65,11 @@ class UserModel
      * @param string $email
      * @return bool
      */
-    public function updateUser($id, $username, $email, $password, string $role = 'admin')
+    public function updateUser($id, $username, $password, string $role = 'admin')
     {
-        $query = "UPDATE teachers SET username = :username, email = :email, password = :password, role = :role WHERE id = :id"; // Kuery untuk memperbarui data pengguna
+        $query = "UPDATE teachers SET username = :username, password = :password, role = :role WHERE id = :id"; // Kuery untuk memperbarui data pengguna
         $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
         $stmt->bindValue(':username', $username); // Mengikat nilai username
-        $stmt->bindValue(':email', $email); // Mengikat nilai email
         $stmt->bindValue(':password', $password); // Mengikat nilai password
         $stmt->bindValue(':role', $role); // Mengikat nilai role
         $stmt->bindValue(':id', $id); // Mengikat nilai ID
@@ -104,7 +102,6 @@ class UserModel
                 u.id AS id_user,
                 u.username,
                 u.role,
-                u.email,
                 j.nama_jurusan,
                 p.status AS status_pembayaran,
                 p.tanggal_pembayaran,

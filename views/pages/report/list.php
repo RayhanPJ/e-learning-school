@@ -1,4 +1,5 @@
 <?php 
+// var_dump($preparedTests);die;
 require(__DIR__ . '/../../layouts/meta.php'); ?>
 <?php require(__DIR__ . '/../../layouts/header.php');?>
 <?php
@@ -30,6 +31,7 @@ if (isset($_SESSION['errors'])) {
                             <thead>
                                 <tr>
                                     <th>No</th>
+                                    <th>Student Name</th>
                                     <th>Test From</th>
                                     <th>Test Name</th>
                                     <th>Subject</th>
@@ -47,6 +49,7 @@ if (isset($_SESSION['errors'])) {
                                 <?php $i = 1; foreach ($preparedTests as $test): ?>
                                     <tr>
                                         <td><?= $i++ ?></td>
+                                        <td><?= strtoupper($test['studentName']) ?></td>
                                         <td><?= strtoupper($test['teacher_username']) ?></td>
                                         <td><?= $test['name'] ?></td>
                                         <td><?= $test['subject'] ?></td>

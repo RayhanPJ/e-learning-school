@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 11 Des 2024 pada 14.18
+-- Waktu pembuatan: 13 Des 2024 pada 21.57
 -- Versi server: 10.4.27-MariaDB
 -- Versi PHP: 8.2.0
 
@@ -33,7 +33,8 @@ CREATE TABLE `major` (
 
 INSERT INTO `major` (`id`, `name`, `price`) VALUES
 (1, 'Informatika', 1000),
-(2, 'Mesin', 2000);
+(2, 'Mesin', 2000),
+(4, 'gambar', 10000);
 
 -- --------------------------------------------------------
 
@@ -76,20 +77,6 @@ CREATE TABLE `registers` (
   `phone` varchar(20) NOT NULL,
   `major_id` int(11) NOT NULL,
   `status_payment` tinyint(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `score`
---
-
-CREATE TABLE `score` (
-  `id` int(11) NOT NULL,
-  `test_id` int(11) NOT NULL,
-  `question_id` int(11) NOT NULL,
-  `correct_count` int(11) NOT NULL,
-  `wrong_count` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -160,7 +147,7 @@ CREATE TABLE `teachers` (
 --
 
 INSERT INTO `teachers` (`id`, `username`, `password`, `role`) VALUES
-(1, 'admin', 'admin', 'admin');
+(2, 'wawan', 'wawan', 'admin');
 
 -- --------------------------------------------------------
 
@@ -210,14 +197,6 @@ ALTER TABLE `registers`
   ADD KEY `registers_fk0` (`major_id`);
 
 --
--- Indeks untuk tabel `score`
---
-ALTER TABLE `score`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `score_fk0` (`test_id`),
-  ADD KEY `score_fk1` (`question_id`);
-
---
 -- Indeks untuk tabel `status`
 --
 ALTER TABLE `status`
@@ -261,25 +240,19 @@ ALTER TABLE `tests`
 -- AUTO_INCREMENT untuk tabel `major`
 --
 ALTER TABLE `major`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT untuk tabel `registers`
 --
 ALTER TABLE `registers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
-
---
--- AUTO_INCREMENT untuk tabel `score`
---
-ALTER TABLE `score`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT untuk tabel `status`
@@ -291,25 +264,25 @@ ALTER TABLE `status`
 -- AUTO_INCREMENT untuk tabel `students`
 --
 ALTER TABLE `students`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT untuk tabel `student_data`
 --
 ALTER TABLE `student_data`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT untuk tabel `teachers`
 --
 ALTER TABLE `teachers`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `tests`
 --
 ALTER TABLE `tests`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
@@ -327,13 +300,6 @@ ALTER TABLE `question_test_mapping`
 --
 ALTER TABLE `registers`
   ADD CONSTRAINT `registers_fk0` FOREIGN KEY (`major_id`) REFERENCES `major` (`id`);
-
---
--- Ketidakleluasaan untuk tabel `score`
---
-ALTER TABLE `score`
-  ADD CONSTRAINT `score_fk0` FOREIGN KEY (`test_id`) REFERENCES `tests` (`id`),
-  ADD CONSTRAINT `score_fk1` FOREIGN KEY (`question_id`) REFERENCES `questions` (`id`);
 
 --
 -- Ketidakleluasaan untuk tabel `students`

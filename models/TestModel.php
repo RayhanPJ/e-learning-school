@@ -23,15 +23,18 @@ class TestModel {
                 t.*,
                 m.name AS major_name,
                 s.name AS status_name,
-                te.username AS teacher_username
+                te.username AS teacher_username,
+                st.username AS student_username
             FROM 
-                tests t  -- Mengambil data dari tabel 'tests'
+                tests t
             JOIN 
                 major m ON t.major_id = m.id 
             JOIN 
                 status s ON t.status_id = s.id
             JOIN 
                 teachers te ON t.teacher_id = te.id
+            JOIN
+                students st ON t.id = st.test_id
         ";
         
         $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
@@ -49,7 +52,8 @@ class TestModel {
                 s.name AS status_name,
                 te.username AS teacher_username,
                 st.score AS student_score,
-                st.status AS student_status
+                st.status AS student_status,
+                st.username AS student_username
             FROM 
                 tests t
             JOIN 

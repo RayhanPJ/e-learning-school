@@ -71,7 +71,7 @@ class TestController extends BaseController
             $averageScore = null;
             $grade = null;
             if ($test['student_status'] === 1) { // Hanya menghitung jika ujian telah selesai
-                $averageScore = $this->scoreCalculationModel->calculateAverageScore($_SESSION['user_id'], $test['id']);
+                $averageScore = $this->scoreCalculationModel->calculateAverageScoreForTest($test['id']);
                 $grade = $this->scoreCalculationModel->getGrade($averageScore);
             }
 
@@ -85,6 +85,7 @@ class TestController extends BaseController
                 'major_name' => $test['major_name'],
                 'total_questions' => $test['total_questions'],
                 'status_name' => $test['status_name'],
+                'studentName' => $test['student_username'],
                 'studentScore' => $test['student_score'],
                 'studentStatus' => $test['student_status'],
                 'totalScore' => $totalScore, // Menyertakan total skor
@@ -146,7 +147,7 @@ class TestController extends BaseController
         $majors = $this->majorModel->getAllMajors(); // Mengambil semua jurusan
         $status = $this->statusModel->getAllStatus(); // Mengambil semua status
         $tests = $this->testModel->getTestById($id); // Mengambil ujian berdasarkan ID
-        $questions = $this->questionModel->getAllQuestions(); // Mengambil semua pertanyaan
+        $questions = $this->questionModel->getAllQuestions($id); // Mengambil semua pertanyaan
         $isQuestionLimit = $this->questionTestMappingModel->isQuestionCountEqualToTotal($id); // Mengambil ujian berdasarkan ID
         $page = 'detail'; // Menentukan halaman detail
         
@@ -252,17 +253,20 @@ class TestController extends BaseController
         }
     }
 
-    private function handleStudentCreation($test_id, $major_id)
-    {
-        // Mengambil semua siswa dalam jurusan dan menambahkan ke tabel siswa
-        $students = $this->studentDataModel->getStudentsByMajorId($major_id);
-        foreach ($students as $student) {
-            $rollno = $student['id'];
-            $username = $student['register_name']; // Mengambil nama pendaftaran siswa
-            $password = $this->generateRandomString(8 - strlen($test_id)) . $test_id; // Menghasilkan password acak
-            $this->studentModel->createStudent($test_id, $rollno, $username, $password); // Membuat entri siswa
-        }
+private function handleStudentCreation($test_id, $major_id)
+{
+    // Mengambil semua siswa dalam jurusan
+    $students = $this->studentDataModel->getStudentsByMajorId($major_id);
+    
+    foreach ($students as $student) {
+        $rollno = $student['rollno']; // Assuming 'rollno' is the correct field in student data
+        $username = $student['register_name']; // Mengambil nama pendaftaran siswa
+        $password = $this->generateRandomString(8 - strlen($test_id)) . $test_id; // Menghasilkan password acak
+        
+        // Membuat entri siswa jika belum ada
+        $this->studentModel->createStudent($test_id, $rollno, $username, $password, $major_id); // Membuat entri siswa
     }
+}
 
     /**
      * Menghapus test dari database.

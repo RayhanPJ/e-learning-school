@@ -76,7 +76,7 @@ if (isset($_SESSION['old'])) {
                                         </span>
                                     </div>
 
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" hidden>
                                         <label>Major</label>
                                         <select class="form-control" id="major_id" name="major_id" required>
                                             <option value="">Select Major</option>

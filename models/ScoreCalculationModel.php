@@ -64,9 +64,48 @@ class ScoreCalculationModel {
         return $averageScore; // Mengembalikan rata-rata skor
     }
 
+    public function calculateAverageScoreForTest($test_id) {
+        // Mendapatkan total skor untuk ujian
+        $totalScore = $this->getTotalScoreForTest($test_id);
+    
+        // Mendapatkan jumlah pertanyaan untuk ujian
+        $query = "
+            SELECT COUNT(q.id) AS total_questions
+            FROM questions q
+            JOIN question_test_mapping qtm ON q.id = qtm.question_id
+            WHERE qtm.test_id = :test_id
+        ";
+    
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':test_id', $test_id); // Mengikat nilai test_id
+        $stmt->execute(); // Menjalankan kueri
+        $totalQuestions = $stmt->fetchColumn(); // Mendapatkan total jumlah pertanyaan
+    
+        // Mendapatkan skor semua siswa untuk ujian
+        $query = "
+            SELECT AVG(score) AS average_score
+            FROM students
+            WHERE test_id = :test_id
+        ";
+    
+        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
+        $stmt->bindValue(':test_id', $test_id); // Mengikat nilai test_id
+        $stmt->execute(); // Menjalankan kueri
+        $averageStudentScore = $stmt->fetchColumn(); // Mendapatkan rata-rata skor siswa
+    
+        // Menghitung rata-rata skor
+        if ($totalQuestions > 0 && $totalScore > 0) {
+            $averageScore = ($averageStudentScore / $totalScore) * 100; // Menghitung rata-rata skor dalam persentase
+        } else {
+            $averageScore = 0; // Menghindari pembagian dengan nol
+        }
+    
+        return $averageScore; // Mengembalikan rata-rata skor
+    }
+
     // Method untuk menentukan grade berdasarkan rata-rata skor
     public function getGrade($averageScore) {
-        if ($averageScore < 50) {
+        if ($averageScore <= 50) {
             return 'C'; // Grade C untuk rata-rata skor di bawah 50
         } elseif ($averageScore >= 51 && $averageScore <= 80) {
             return 'B'; // Grade B untuk rata-rata skor antara 51 dan 80

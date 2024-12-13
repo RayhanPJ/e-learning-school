@@ -67,12 +67,12 @@ class TeachersController extends BaseController
         if ($this->userModel->createUser($username, $password, $role)) {
             $_SESSION['flash'] = 'User berhasil ditambahkan.';
             $_SESSION['class'] = 'alert-success';
-            header('Location: ' . $_ENV['BASE_URL'] . '/class');
+            header('Location: ' . $_ENV['BASE_URL'] . '/users');
             exit;
         } else {
             $_SESSION['flash'] = 'User gagal ditambahkan.';
             $_SESSION['class'] = 'alert-warning';
-            header('Location: ' . $_ENV['BASE_URL'] . '/class');
+            header('Location: ' . $_ENV['BASE_URL'] . '/users');
             exit;
         }
     }
@@ -118,12 +118,12 @@ class TeachersController extends BaseController
         if ($this->userModel->updateUser($id, $username, $password, $role)) {
             $_SESSION['flash'] = 'User berhasil diperbarui.';
             $_SESSION['class'] = 'alert-success';
-            header('Location: ' . $_ENV['BASE_URL'] . '/class');
+            header('Location: ' . $_ENV['BASE_URL'] . '/users');
             exit;
         } else {
             $_SESSION['flash'] = 'User gagal diperbarui.';
             $_SESSION['class'] = 'alert-warning';
-            header('Location: ' . $_ENV['BASE_URL'] . '/class');
+            header('Location: ' . $_ENV['BASE_URL'] . '/users');
             exit;
         }
     }

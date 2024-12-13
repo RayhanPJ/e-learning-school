@@ -9,11 +9,19 @@ class QuestionModel {
     }
 
     // Method untuk mengambil semua pertanyaan
-    public function getAllQuestions() {
-        $query = "SELECT * FROM questions"; // Mengambil semua data dari tabel 'questions'
-        $stmt = $this->db->prepare($query); // Menyiapkan pernyataan
-        $stmt->execute(); // Menjalankan kueri
-        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Mengembalikan semua pertanyaan sebagai array asosiatif
+    public function getAllQuestions($test_id) {
+        // Query to get all questions associated with the given test_id
+        $query = "
+            SELECT q.*
+            FROM questions q
+            JOIN question_test_mapping qtm ON q.id = qtm.question_id
+            WHERE qtm.test_id = :test_id
+        ";
+    
+        $stmt = $this->db->prepare($query); // Prepare the statement
+        $stmt->bindValue(':test_id', $test_id); // Bind the test_id value
+        $stmt->execute(); // Execute the query
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); // Return all questions as an associative array
     }
 
     // Method untuk membuat pertanyaan baru

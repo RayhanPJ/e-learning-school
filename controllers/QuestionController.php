@@ -1,7 +1,6 @@
 <?php
 require_once __DIR__ . '/../models/QuestionModel.php';
 require_once __DIR__ . '/../models/QuestionTestMappingModel.php'; // Sertakan model pemetaan
-require_once __DIR__ . '/../models/ScoreModel.php'; // Sertakan model skor
 require_once __DIR__ . '/../models/StudentModel.php'; // Sertakan model skor
 require_once __DIR__ . '/../controllers/BaseController.php';
 require_once __DIR__ . '/../vendor/autoload.php'; // Lokasi autoloader vendor
@@ -12,7 +11,6 @@ class QuestionController extends BaseController
 {
     private $questionModel;
     private $questionTestMappingModel; // Tambahkan model pemetaan
-    private $scoreModel; // Tambahkan model skor
     private $studentModel; // Tambahkan model skor
 
     public function __construct()
@@ -20,24 +18,11 @@ class QuestionController extends BaseController
         parent::__construct(); // Memanggil konstruktor BaseController
         $this->questionModel = new QuestionModel(); // Menginisialisasi model Question
         $this->questionTestMappingModel = new QuestionTestMappingModel(); // Menginisialisasi model pemetaan
-        $this->scoreModel = new ScoreModel(); // Menginisialisasi model Score
         $this->studentModel = new StudentModel(); // Menginisialisasi model Score
         $dotenv = Dotenv::createImmutable(__DIR__ . '/../');
         $dotenv->load(); // Memuat variabel lingkungan
     }
 
-    /**
-     * Menampilkan semua pertanyaan.
-     */
-    public function index()
-    {
-        $this->authorize('admin'); // Memastikan pengguna memiliki otorisasi
-        $questions = $this->questionModel->getAllQuestions(); // Mengambil semua pertanyaan
-
-        require_once __DIR__ . '/../views/pages/management/question/list.php'; // Memuat tampilan daftar pertanyaan
-
-        return $questions; // Mengembalikan daftar pertanyaan
-    }
 
     /**
      * Menampilkan halaman untuk membuat pertanyaan baru.
@@ -105,7 +90,6 @@ class QuestionController extends BaseController
 
         if ($question) {
             $this->questionTestMappingModel->createMapping($question['id'], trim($_POST['tests_id'])); // Membuat pemetaan
-            $this->scoreModel->createScore(trim($_POST['tests_id']), $question['id']); // Membuat entri skor
 
             $_SESSION['flash'] = 'Pertanyaan berhasil dibuat.'; // Mengatur pesan sukses
             $_SESSION['class'] = 'alert-success';
@@ -173,7 +157,6 @@ class QuestionController extends BaseController
         $this->authorize('admin'); // Memastikan pengguna memiliki otorisasi
 
         $this->questionTestMappingModel->deleteMapping($id, $test_id); // Opsional menghapus pemetaan
-        $this->scoreModel->deleteByQuestionId($id); // Opsional menghapus pemetaan
         if ($this->questionModel->deleteQuestion($id)) {
             $_SESSION['flash'] = 'Pertanyaan berhasil dihapus.'; // Mengatur pesan sukses
             $_SESSION['class'] = 'alert-danger';
@@ -218,20 +201,14 @@ class QuestionController extends BaseController
                     // Memeriksa apakah opsi yang dipilih benar
                     if ($question['correctAns'] == $selected_option) {
                         // Memperbarui jumlah jawaban benar di tabel skor
-                        $this->scoreModel->updateCorrectCount($question_id);
-                    } else {
-                        // Memperbarui jumlah jawaban salah di tabel skor
-                        $this->scoreModel->updateWrongCount($question_id);
+                        $total_score += $question['score']; // Mengakumulasi total skor
                     }
-
-                    // Mendapatkan skor untuk pertanyaan
-                    $score_earned = $this->scoreModel->getQuestionScore($question_id);
-                    $total_score += $score_earned; // Mengakumulasi total skor
+                    
                 }
             }
 
             // Memperbarui total skor siswa berdasarkan total skor yang diperoleh
-            $this->scoreModel->updateStudentScore($student_id, $total_score);
+            $this->studentModel->updateStudentScore($student_id, $total_score);
 
             // Mengarahkan ke dashboard setelah pemrosesan
             header('Location: ' . $_ENV['BASE_URL'] . '/dashboard');
